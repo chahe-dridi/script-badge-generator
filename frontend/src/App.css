@@ -477,3 +477,145 @@ html, body, #root {
   .panel-left { border-right: none; border-bottom: 1px solid var(--border); }
   .panel-right { min-height: 500px; }
 }
+
+/* ── Auto-preview overlay ─────────────────────────────────────────────── */
+.preview-area { position: relative; }
+.preview-loading-overlay {
+  position: absolute; inset: 0;
+  background: rgba(11,12,15,0.5);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius);
+  backdrop-filter: blur(2px);
+}
+.spinner-sm {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Action row ───────────────────────────────────────────────────────── */
+.action-row {
+  display: flex; gap: 10px;
+}
+.action-row .btn-secondary { flex: 0 0 auto; }
+.action-row .btn-generate  { flex: 1; }
+
+/* ── Progress label ───────────────────────────────────────────────────── */
+.progress-bar { position: relative; }
+.progress-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--bg); font-weight: 600;
+  pointer-events: none;
+}
+
+/* ── View switcher ────────────────────────────────────────────────────── */
+.view-switcher { display: flex; gap: 6px; margin-left: auto; }
+.view-btn {
+  padding: 7px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.view-btn:hover:not(:disabled) { color: var(--text); border-color: var(--muted); }
+.view-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.view-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Gallery view ─────────────────────────────────────────────────────── */
+.gallery-view {
+  display: flex; flex-direction: column;
+  height: calc(100vh - 65px);
+  overflow: hidden;
+}
+.gallery-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  gap: 16px; flex-shrink: 0;
+}
+.gallery-toolbar-left  { display: flex; align-items: center; gap: 16px; }
+.gallery-toolbar-right { display: flex; align-items: center; gap: 10px; }
+.gallery-count {
+  font-family: var(--font-mono); font-size: 13px; color: var(--muted);
+}
+.gallery-progress {
+  width: 120px; height: 4px;
+  background: var(--border); border-radius: 100px; overflow: hidden;
+}
+.gallery-progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 100px; transition: width 0.3s;
+}
+.gallery-gen-progress { margin: 0 24px; border-radius: var(--radius); overflow: hidden; }
+
+.gallery-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  color: var(--muted);
+}
+
+.gallery-grid {
+  flex: 1; overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px 24px;
+  align-content: start;
+}
+
+/* ── Gallery card ─────────────────────────────────────────────────────── */
+.gallery-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.gallery-card:hover { border-color: var(--muted); transform: translateY(-2px); }
+.gallery-card.has-error { border-color: var(--danger); }
+.gallery-card.editing  { border-color: var(--accent); }
+
+.gallery-card-img {
+  width: 100%; aspect-ratio: 4/3;
+  overflow: hidden; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+}
+.gallery-card-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.gallery-card-error { color: var(--danger); font-size: 13px; }
+
+.gallery-card-footer {
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  border-top: 1px solid var(--border);
+}
+.gallery-card-name {
+  font-size: 13px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text);
+}
+.gallery-name-input { font-size: 12px; padding: 6px 10px; }
+
+.gallery-card-actions {
+  display: flex; gap: 4px;
+}
+.card-action-btn {
+  flex: 1; padding: 5px 4px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--muted);
+  font-size: 13px; cursor: pointer;
+  transition: all 0.12s; text-align: center;
+  text-decoration: none; display: flex; align-items: center; justify-content: center;
+}
+.card-action-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.card-action-danger:hover { background: var(--danger) !important; border-color: var(--danger) !important; }
