@@ -1,0 +1,234 @@
+/* Navbar Styles */
+
+.navbar {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 28px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(26, 26, 46, 0.92) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(184, 255, 69, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 280px;
+}
+
+.nav-brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #b8ff45, #8fff2e);
+  color: #1a1a2e;
+  font-weight: 900;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(184, 255, 69, 0.3);
+}
+
+.nav-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.nav-event {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b8ff45;
+  margin-left: 8px;
+  padding: 4px 10px;
+  background: rgba(184, 255, 69, 0.1);
+  border-radius: 6px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.nav-steps {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 400px;
+}
+
+.nav-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-step:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.nav-step:not(:disabled):hover {
+  background: rgba(184, 255, 69, 0.08);
+}
+
+.nav-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  font-family: "DM Mono", monospace;
+}
+
+.nav-step-lbl {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-step.nav-step-active .nav-step-num {
+  background: linear-gradient(135deg, #b8ff45, #8fff2e);
+  border-color: #b8ff45;
+  color: #1a1a2e;
+  box-shadow: 0 0 12px rgba(184, 255, 69, 0.4);
+}
+
+.nav-step.nav-step-active .nav-step-lbl {
+  color: #fff;
+  font-weight: 700;
+}
+
+.nav-step.nav-step-done .nav-step-num {
+  background: transparent;
+  border-color: #b8ff45;
+  color: #b8ff45;
+}
+
+.nav-step.nav-step-done .nav-step-lbl {
+  color: #b8ff45;
+}
+
+.nav-step.nav-step-done:hover {
+  background: rgba(184, 255, 69, 0.12);
+}
+
+.nav-step-line {
+  width: 36px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.nav-step-line-done {
+  background: #b8ff45;
+  box-shadow: 0 0 8px rgba(184, 255, 69, 0.3);
+}
+
+.nav-end {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.nav-back {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-back:hover {
+  border-color: #b8ff45;
+  color: #b8ff45;
+  background: rgba(184, 255, 69, 0.1);
+  box-shadow: 0 0 12px rgba(184, 255, 69, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .navbar {
+    padding: 0 16px;
+    gap: 16px;
+  }
+
+  .nav-brand {
+    min-width: auto;
+  }
+
+  .nav-event {
+    display: none;
+  }
+
+  .nav-steps {
+    min-width: auto;
+    gap: 4px;
+  }
+
+  .nav-step-lbl {
+    display: none;
+  }
+
+  .nav-step-line {
+    width: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    height: 60px;
+    padding: 0 12px;
+  }
+
+  .nav-brand-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .nav-brand-name {
+    font-size: 16px;
+  }
+
+  .nav-steps {
+    display: none;
+  }
+
+  .nav-back {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

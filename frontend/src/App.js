@@ -1,5 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import "./App.css";
+import "./styles/Global.css";
+import "./styles/Navbar.css";
+import "./styles/Footer.css";
+import "./styles/Pages-Setup.css";
+import "./styles/Pages-Design.css";
+import "./styles/Pages-Gallery.css";
+import "./styles/Pages-Export.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
@@ -390,20 +398,9 @@ export default function App() {
   return (
     <div className="root">
       <div className="noise" />
-
-      {/* HEADER */}
-      <header className="hdr">
-        <div className="brand">
-          <div className="brand-mark">B</div>
-          <span className="brand-name">BadgeGen</span>
-        </div>
-        <Steps step={page} onClick={setPage} />
-        <div className="hdr-end">
-          {page > 0 && (
-            <button className="ghost" onClick={() => setPage(p => Math.max(0, p - 1))}>← Back</button>
-          )}
-        </div>
-      </header>
+      
+      {/* Navbar */}
+      <Navbar page={page} onPageChange={setPage} event_name={cfg.event_name} />
 
       {toast && <Toast msg={toast.msg} type={toast.type} />}
 
@@ -808,6 +805,9 @@ export default function App() {
 
       {/* Hidden canvas for rendering (page 0) */}
       {page === 0 && <canvas ref={previewCanvasRef} style={{ display: "none" }} />}
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
