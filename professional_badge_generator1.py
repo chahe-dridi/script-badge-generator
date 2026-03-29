@@ -3,25 +3,21 @@
 Professional Badge Generator
 Automatically generates personalized badges from a template image and names list.
 Features: Modern UI, Advanced Text Effects, Click Positioning, Event Organization
-Supports: English, Arabic, and other RTL/LTR languages
 """
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, colorchooser
-from PIL import Image, ImageDraw, ImageFont, ImageTk, ImageFilter, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageTk, ImageFilter
 import pandas as pd
 import os
 import json
 from pathlib import Path
 import threading
-import arabic_reshaper
-from bidi.algorithm import get_display
-import unicodedata
 
 class ProfessionalBadgeGenerator:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("🎫 Professional Badge Generator - Multi-language Support")
+        self.root.title("🎫 Professional Badge Generator")
         self.root.geometry("1200x800")
         self.root.configure(bg='#f0f0f0')
         
@@ -36,10 +32,6 @@ class ProfessionalBadgeGenerator:
         self.font_color = "#000000"
         self.text_x = tk.IntVar(value=400)
         self.text_y = tk.IntVar(value=300)
-        
-        # Language support
-        self.text_direction = tk.StringVar(value="auto")  # auto, ltr, rtl
-        self.arabic_support = tk.BooleanVar(value=True)
         
         # Advanced styling
         self.text_shadow = tk.BooleanVar(value=False)
@@ -68,22 +60,12 @@ class ProfessionalBadgeGenerator:
         self.text_strikethrough = tk.BooleanVar(value=False)
         self.text_rotation = tk.IntVar(value=0)  # Text rotation angle
         
-        # Available fonts with Arabic support
+        # Available system fonts (commonly available on Windows)
         self.system_fonts = [
             "Arial", "Times New Roman", "Calibri", "Verdana", 
             "Georgia", "Trebuchet MS", "Comic Sans MS", "Impact", 
             "Tahoma", "Courier New", "Century Gothic", "Book Antiqua", 
-            "Segoe UI", "Consolas", "Cambria", "Candara",
-            "Microsoft Sans Serif", "DejaVu Sans", "Noto Sans Arabic",
-            "Traditional Arabic", "Arabic Typesetting", "Simplified Arabic",
-            "Arial Unicode MS", "Lucida Sans Unicode"
-        ]
-        
-        # Arabic fonts (these work well with Arabic text)
-        self.arabic_fonts = [
-            "Traditional Arabic", "Arabic Typesetting", "Simplified Arabic",
-            "Noto Sans Arabic", "Arial Unicode MS", "Microsoft Sans Serif",
-            "DejaVu Sans", "Tahoma", "Segoe UI"
+            "Segoe UI", "Consolas", "Cambria", "Candara"
         ]
         
         # Template and preview
@@ -98,29 +80,10 @@ class ProfessionalBadgeGenerator:
         # Click positioning
         self.click_positioning = False
         
-        # Font cache
-        self.font_cache = {}
-        
         # Register validation functions
         self.validate_number = (self.root.register(self.validate_numeric_input), '%P')
         
-        # Check for arabic-reshaper and python-bidi
-        self.arabic_reshaping_available = False
-        self.bidi_available = False
-        self.check_rtl_libraries()
-        
         self.setup_gui()
-    
-    def check_rtl_libraries(self):
-        """Check if RTL text processing libraries are available"""
-        try:
-            import arabic_reshaper
-            from bidi.algorithm import get_display
-            self.arabic_reshaping_available = True
-            self.bidi_available = True
-        except ImportError:
-            print("RTL libraries not available. Arabic text may not display correctly.")
-            print("Install with: pip install arabic-reshaper python-bidi")
     
     def validate_numeric_input(self, value):
         """Validate numeric input for entries"""
@@ -131,62 +94,7 @@ class ProfessionalBadgeGenerator:
             return 0 <= num <= 10000  # Reasonable bounds
         except ValueError:
             return False
-    
-    def contains_arabic(self, text):
-        """Check if text contains Arabic characters"""
-        if not text:
-            return False
         
-        # Check for Arabic Unicode blocks
-        for char in text:
-            if '\u0600' <= char <= '\u06FF' or '\u0750' <= char <= '\u077F' or \
-               '\u08A0' <= char <= '\u08FF' or '\uFB50' <= char <= '\uFDFF' or \
-               '\uFE70' <= char <= '\uFEFF':
-                return True
-        return False
-    
-    def process_text_for_display(self, text):
-        """Process text for proper display (RTL/LTR handling)"""
-        if not text:
-            return text
-        
-        # Check if text contains Arabic
-        if self.contains_arabic(text) and self.arabic_support.get():
-            if self.arabic_reshaping_available and self.bidi_available:
-                try:
-                    # Reshape Arabic text for proper display
-                    reshaped_text = arabic_reshaper.reshape(text)
-                    # Apply bidirectional algorithm
-                    processed_text = get_display(reshaped_text)
-                    return processed_text
-                except Exception as e:
-                    print(f"Arabic text processing error: {e}")
-                    return text
-            else:
-                # Libraries not available, return as-is
-                return text
-        else:
-            return text
-    
-    def detect_text_direction(self, text):
-        """Detect if text is RTL or LTR"""
-        if not text:
-            return "ltr"
-        
-        # Check for RTL characters
-        rtl_blocks = [
-            ('\u0591', '\u07FF'),  # Hebrew, Arabic, Syriac, Thaana, etc.
-            ('\uFB1D', '\uFDFD'),  # Hebrew/Arabic presentation forms
-            ('\uFE70', '\uFEFF'),  # Arabic presentation forms
-        ]
-        
-        for char in text:
-            for start, end in rtl_blocks:
-                if start <= char <= end:
-                    return "rtl"
-        
-        return "ltr"
-    
     def setup_gui(self):
         """Setup the GUI interface"""
         # Main title
@@ -194,15 +102,9 @@ class ProfessionalBadgeGenerator:
         title_frame.pack(fill=tk.X)
         title_frame.pack_propagate(False)
         
-        title_label = tk.Label(title_frame, text="🎫 Professional Badge Generator - Multi-language", 
+        title_label = tk.Label(title_frame, text="🎫 Professional Badge Generator", 
                               font=('Arial', 16, 'bold'), fg='white', bg='#2c3e50')
         title_label.pack(expand=True)
-        
-        # Language support indicator
-        lang_indicator = tk.Label(title_frame, 
-                                 text="🌍 Supports: English, العربية, Français, Español, etc.",
-                                 font=('Arial', 10), fg='#3498db', bg='#2c3e50')
-        lang_indicator.pack(side=tk.RIGHT, padx=10)
         
         # Main container
         main_container = tk.Frame(self.root, bg='#ecf0f1')
@@ -232,19 +134,16 @@ class ProfessionalBadgeGenerator:
         text_tab = ttk.Frame(notebook)
         effects_tab = ttk.Frame(notebook)
         position_tab = ttk.Frame(notebook)
-        language_tab = ttk.Frame(notebook)
         
         notebook.add(files_tab, text="📁 Files & Event")
         notebook.add(text_tab, text="📝 Text Style")
         notebook.add(effects_tab, text="✨ Effects")
         notebook.add(position_tab, text="📍 Position")
-        notebook.add(language_tab, text="🌍 Language")
         
         self.setup_files_tab(files_tab)
         self.setup_text_tab(text_tab)
         self.setup_effects_tab(effects_tab)
         self.setup_position_tab(position_tab)
-        self.setup_language_tab(language_tab)
         
         # Action buttons at bottom
         self.setup_action_buttons(parent)
@@ -307,15 +206,10 @@ class ProfessionalBadgeGenerator:
                              bg='#3498db', fg='white', font=('Arial', 9, 'bold'), relief='flat')
         names_btn.grid(row=1, column=1, padx=10)
         
-        # Test RTL text button
-        test_rtl_btn = tk.Button(names_frame, text="Test Arabic Text", command=self.test_arabic_text,
-                               bg='#9b59b6', fg='white', font=('Arial', 9), relief='flat')
-        test_rtl_btn.grid(row=1, column=2, padx=5)
-        
         # Names count label
         self.names_count = tk.Label(names_frame, text="No names loaded", 
                                    font=('Arial', 9), fg='gray')
-        self.names_count.grid(row=2, column=0, columnspan=3, pady=5)
+        self.names_count.grid(row=2, column=0, columnspan=2, pady=5)
         
         # Output directory
         output_frame = ttk.LabelFrame(scrollable_frame, text="📂 Output Settings", padding=15)
@@ -351,25 +245,12 @@ class ProfessionalBadgeGenerator:
         font_frame = ttk.LabelFrame(scrollable_frame, text="🔤 Font Settings", padding=15)
         font_frame.pack(fill=tk.X, padx=10, pady=10)
         
-        # Font family with Arabic font indicator
+        # Font family
         tk.Label(font_frame, text="Font Family:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky=tk.W, pady=5)
         font_combo = ttk.Combobox(font_frame, textvariable=self.font_family, 
-                                values=self.system_fonts, width=25, font=('Arial', 9))
+                                values=self.system_fonts, width=20, font=('Arial', 9))
         font_combo.grid(row=0, column=1, padx=10, pady=5)
-        
-        # Add Arabic font indicator
-        arabic_indicator = tk.Label(font_frame, text="", font=('Arial', 8))
-        arabic_indicator.grid(row=0, column=2, padx=5)
-        
-        def update_font_indicator(*args):
-            font = self.font_family.get()
-            if font in self.arabic_fonts:
-                arabic_indicator.config(text="✅ Arabic", fg='green')
-            else:
-                arabic_indicator.config(text="⚠️ Check Arabic support", fg='orange')
-        
-        self.font_family.trace('w', update_font_indicator)
-        font_combo.bind('<<ComboboxSelected>>', lambda e: (update_font_indicator(), self.update_preview()))
+        font_combo.bind('<<ComboboxSelected>>', lambda e: self.update_preview())
         
         # Font size with bigger range (12-300)
         tk.Label(font_frame, text="Font Size:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky=tk.W, pady=5)
@@ -621,81 +502,6 @@ class ProfessionalBadgeGenerator:
                   bg='#e74c3c', fg='white', font=('Arial', 10, 'bold'), relief='flat')
         click_btn.grid(row=2, column=0, columnspan=2, pady=15)
     
-    def setup_language_tab(self, parent):
-        """Setup language settings tab"""
-        # Create scrollable frame
-        canvas = tk.Canvas(parent)
-        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
-        
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
-        
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-        
-        # Language support section
-        language_frame = ttk.LabelFrame(scrollable_frame, text="🌍 Language Support", padding=15)
-        language_frame.pack(fill=tk.X, padx=10, pady=10)
-        
-        # Arabic/RTL support checkbox
-        arabic_check = tk.Checkbutton(language_frame, text="Enable Arabic/RTL Text Support", 
-                                     variable=self.arabic_support, font=('Arial', 10, 'bold'),
-                                     command=self.update_preview)
-        arabic_check.grid(row=0, column=0, sticky=tk.W, pady=10)
-        
-        # Library status
-        lib_status = tk.Frame(language_frame)
-        lib_status.grid(row=1, column=0, sticky=tk.W, pady=5)
-        
-        if self.arabic_reshaping_available and self.bidi_available:
-            status_text = "✅ arabic-reshaper & python-bidi libraries detected"
-            status_color = "green"
-        else:
-            status_text = "⚠️ Install: pip install arabic-reshaper python-bidi"
-            status_color = "orange"
-        
-        lib_label = tk.Label(lib_status, text=status_text, font=('Arial', 9), fg=status_color)
-        lib_label.pack(side=tk.LEFT)
-        
-        # Test Arabic button
-        test_btn = tk.Button(language_frame, text="Test Arabic Display", 
-                           command=self.test_arabic_preview,
-                           bg='#9b59b6', fg='white', font=('Arial', 10), relief='flat')
-        test_btn.grid(row=2, column=0, pady=10)
-        
-        # Text direction
-        direction_frame = ttk.LabelFrame(scrollable_frame, text="↔️ Text Direction", padding=15)
-        direction_frame.pack(fill=tk.X, padx=10, pady=10)
-        
-        tk.Label(direction_frame, text="Text Direction:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky=tk.W, pady=5)
-        
-        direction_combo = ttk.Combobox(direction_frame, textvariable=self.text_direction, 
-                                     values=["auto", "ltr", "rtl"], width=15, font=('Arial', 9), state="readonly")
-        direction_combo.grid(row=0, column=1, padx=10, pady=5)
-        direction_combo.bind('<<ComboboxSelected>>', lambda e: self.update_preview())
-        
-        # Info section
-        info_frame = ttk.LabelFrame(scrollable_frame, text="ℹ️ Information", padding=15)
-        info_frame.pack(fill=tk.X, padx=10, pady=10)
-        
-        info_text = (
-            "For best Arabic/RTL support:\n"
-            "1. Use fonts that support Arabic (Traditional Arabic, Arabic Typesetting, etc.)\n"
-            "2. Install required libraries: pip install arabic-reshaper python-bidi\n"
-            "3. Text will automatically detect Arabic characters\n"
-            "4. For mixed text, use 'auto' direction setting"
-        )
-        
-        info_label = tk.Label(info_frame, text=info_text, font=('Arial', 9), 
-                             justify=tk.LEFT, wraplength=380)
-        info_label.pack()
-    
     def setup_preview_panel(self, parent):
         """Setup the preview panel"""
         # Title
@@ -748,11 +554,6 @@ class ProfessionalBadgeGenerator:
                       command=lambda s=scale: self.set_zoom(s),
                       bg='#95a5a6', fg='white', font=('Arial', 9, 'bold'), relief='flat')
             zoom_btn.pack(side=tk.LEFT, padx=2)
-        
-        # Language indicator
-        self.preview_lang_indicator = tk.Label(controls_frame, text="Language: Auto-detect", 
-                                              font=('Arial', 9), fg='#2c3e50', bg='white')
-        self.preview_lang_indicator.pack(side=tk.RIGHT, padx=10)
     
     def setup_action_buttons(self, parent):
         """Setup action buttons"""
@@ -778,71 +579,6 @@ class ProfessionalBadgeGenerator:
                   command=self.load_configuration, 
                   bg='#34495e', fg='white', font=('Arial', 11, 'bold'), relief='flat')
         load_btn.pack(fill=tk.X, pady=3)
-    
-    def test_arabic_text(self):
-        """Test Arabic text functionality"""
-        test_names = [
-            "أحمد محمد",  # Arabic name
-            "محمد علي",   # Arabic name
-            "سارة عبدالله",  # Arabic name
-            "John Smith",  # English name
-            "Ali Ahmed",   # Mixed name
-            "مروة خالد"    # Arabic name
-        ]
-        
-        self.names_list = test_names
-        self.names_count.config(text=f"✅ Loaded {len(self.names_list)} test names (including Arabic)", fg='green')
-        messagebox.showinfo("Test Names", f"Loaded {len(test_names)} test names including Arabic text.\n\nClick 'Preview Single Badge' to test Arabic display.")
-    
-    def test_arabic_preview(self):
-        """Test Arabic text in preview"""
-        if not self.template_image:
-            messagebox.showwarning("Warning", "Please select a template first!")
-            return
-        
-        # Create a test window
-        test_window = tk.Toplevel(self.root)
-        test_window.title("Arabic Text Test")
-        test_window.geometry("600x400")
-        test_window.configure(bg='#2c3e50')
-        
-        # Test Arabic text
-        arabic_texts = [
-            "مرحبا بك في العالم",  # Hello World in Arabic
-            "اسمي أحمد",          # My name is Ahmed
-            "هذا اختبار للغة العربية",  # This is an Arabic test
-            "Professional Badge Generator",  # English text
-            "Mixed: أحمد Smith"  # Mixed text
-        ]
-        
-        text_frame = tk.Frame(test_window, bg='white', relief='raised', bd=2)
-        text_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        for i, text in enumerate(arabic_texts):
-            frame = tk.Frame(text_frame, bg='white')
-            frame.pack(fill=tk.X, padx=10, pady=5)
-            
-            # Original text
-            orig_label = tk.Label(frame, text=f"Original: {text}", 
-                                 font=('Arial', 10), bg='white', anchor='w')
-            orig_label.pack(side=tk.LEFT, padx=5)
-            
-            # Processed text
-            processed = self.process_text_for_display(text)
-            proc_label = tk.Label(frame, text=f"Processed: {processed}", 
-                                 font=('Arial', 10), bg='white', anchor='w')
-            proc_label.pack(side=tk.LEFT, padx=5)
-            
-            # Direction indicator
-            direction = self.detect_text_direction(text)
-            dir_label = tk.Label(frame, text=f"Direction: {direction.upper()}", 
-                                font=('Arial', 10), bg='white', fg='blue')
-            dir_label.pack(side=tk.RIGHT, padx=5)
-        
-        # Close button
-        close_btn = tk.Button(test_window, text="Close", command=test_window.destroy,
-                            bg='#e74c3c', fg='white', font=('Arial', 10, 'bold'))
-        close_btn.pack(pady=10)
     
     def select_template(self):
         """Select badge template image"""
@@ -903,72 +639,23 @@ class ProfessionalBadgeGenerator:
             self.load_names()
     
     def load_names(self):
-        """Load names from file with encoding detection"""
+        """Load names from file"""
         try:
             file_path = self.names_file_path.get()
             if not file_path:
                 return
             
-            encodings_to_try = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1256', 'windows-1256', 'iso-8859-6']
-            
             if file_path.endswith('.txt'):
-                # Try different encodings for text files
-                for encoding in encodings_to_try:
-                    try:
-                        with open(file_path, 'r', encoding=encoding) as f:
-                            self.names_list = [line.strip() for line in f if line.strip()]
-                        break
-                    except UnicodeDecodeError:
-                        continue
-                else:
-                    # If all encodings fail, use utf-8 with errors ignore
-                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        self.names_list = [line.strip() for line in f if line.strip()]
-                        
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    self.names_list = [line.strip() for line in f if line.strip()]
             elif file_path.endswith('.csv'):
-                # Try different encodings for CSV
-                for encoding in encodings_to_try:
-                    try:
-                        df = pd.read_csv(file_path, encoding=encoding)
-                        self.names_list = df.iloc[:, 0].astype(str).tolist()
-                        break
-                    except UnicodeDecodeError:
-                        continue
-                else:
-                    df = pd.read_csv(file_path, encoding='utf-8', errors='ignore')
-                    self.names_list = df.iloc[:, 0].astype(str).tolist()
-                    
+                df = pd.read_csv(file_path)
+                self.names_list = df.iloc[:, 0].astype(str).tolist()  # First column
             elif file_path.endswith(('.xlsx', '.xls')):
                 df = pd.read_excel(file_path)
-                self.names_list = df.iloc[:, 0].astype(str).tolist()
+                self.names_list = df.iloc[:, 0].astype(str).tolist()  # First column
             
-            # Check for Arabic names in the list
-            arabic_count = sum(1 for name in self.names_list if self.contains_arabic(str(name)))
-            
-            if arabic_count > 0:
-                self.names_count.config(
-                    text=f"✅ Loaded {len(self.names_list)} names ({arabic_count} Arabic names detected)", 
-                    fg='green'
-                )
-                
-                # Auto-select Arabic font if needed
-                if arabic_count > 0 and self.font_family.get() not in self.arabic_fonts:
-                    # Suggest Arabic font
-                    response = messagebox.askyesno(
-                        "Arabic Names Detected", 
-                        f"Detected {arabic_count} Arabic names in your list.\n\n"
-                        f"Would you like to switch to an Arabic-supporting font?\n"
-                        f"(Recommended for proper display)"
-                    )
-                    if response:
-                        # Switch to a font that supports Arabic
-                        for font in self.arabic_fonts:
-                            if font in self.system_fonts:
-                                self.font_family.set(font)
-                                break
-            else:
-                self.names_count.config(text=f"✅ Loaded {len(self.names_list)} names", fg='green')
-                
+            self.names_count.config(text=f"✅ Loaded {len(self.names_list)} names", fg='green')
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load names: {str(e)}")
             self.names_count.config(text="❌ Failed to load names", fg='red')
@@ -1069,7 +756,7 @@ class ProfessionalBadgeGenerator:
         self.update_preview()
     
     def get_font(self):
-        """Get font object with cache for performance"""
+        """Get font object with proper fallback and size/style support"""
         font_size = self.font_size.get()
         font_family = self.font_family.get()
         font_style = self.font_style.get()
@@ -1078,15 +765,8 @@ class ProfessionalBadgeGenerator:
         # Ensure minimum readable font size
         font_size = max(8, font_size)
         
-        # Create cache key
-        cache_key = f"{font_family}_{font_size}_{font_style}_{font_weight}"
-        
-        # Check cache first
-        if cache_key in self.font_cache:
-            return self.font_cache[cache_key]
-        
         try:
-            # Strategy 1: Try loading font by name with various fallbacks
+            # Strategy 1: Try loading font by name (works for system-installed fonts)
             font_attempts = self.generate_font_attempts(font_family, font_style, font_weight)
             
             for font_attempt in font_attempts:
@@ -1094,22 +774,16 @@ class ProfessionalBadgeGenerator:
                     font = ImageFont.truetype(font_attempt, font_size)
                     # Test if the font actually works
                     font.getbbox("Test")
-                    # Cache the font
-                    self.font_cache[cache_key] = font
                     return font
-                except Exception as e:
-                    print(f"Font attempt failed for {font_attempt}: {e}")
+                except:
                     continue
             
             # Strategy 2: Try basic font names without paths
-            basic_attempts = [font_family, "Arial", "arial", "DejaVuSans", "Liberation Sans", 
-                            "Tahoma", "Microsoft Sans Serif", "Segoe UI"]
-            
+            basic_attempts = [font_family, "Arial", "arial", "DejaVuSans", "Liberation Sans"]
             for font_name in basic_attempts:
                 try:
                     font = ImageFont.truetype(font_name, font_size) 
                     font.getbbox("Test")  # Test if it works
-                    self.font_cache[cache_key] = font
                     return font
                 except:
                     continue
@@ -1118,9 +792,7 @@ class ProfessionalBadgeGenerator:
             print(f"Font loading error: {e}")
         
         # Strategy 3: Use fallback font that properly handles size
-        fallback_font = self.create_working_fallback_font(font_size)
-        self.font_cache[cache_key] = fallback_font
-        return fallback_font
+        return self.create_working_fallback_font(font_size)
     
     def generate_font_attempts(self, font_family, font_style, font_weight):
         """Generate list of font file names to try"""
@@ -1143,12 +815,7 @@ class ProfessionalBadgeGenerator:
             "Segoe UI": "segoeui",
             "Consolas": "consola",
             "Cambria": "cambria",
-            "Candara": "candara",
-            "Traditional Arabic": "trado",
-            "Arabic Typesetting": "arabtype",
-            "Simplified Arabic": "simpo",
-            "Microsoft Sans Serif": "micross",
-            "Arial Unicode MS": "arialuni"
+            "Candara": "candara"
         }
         
         if font_family in font_paths:
@@ -1186,8 +853,7 @@ class ProfessionalBadgeGenerator:
         """Create a working fallback font that handles size changes properly"""
         try:
             # Try to get any working TrueType font
-            working_fonts = ['arial.ttf', 'Arial', 'times.ttf', 'Times New Roman', 
-                           'tahoma.ttf', 'Tahoma', 'micross.ttf', 'Microsoft Sans Serif']
+            working_fonts = ['arial.ttf', 'Arial', 'times.ttf', 'Times New Roman', 'calibri.ttf', 'Calibri']
             for font_name in working_fonts:
                 try:
                     font = ImageFont.truetype(font_name, font_size)
@@ -1216,7 +882,7 @@ class ProfessionalBadgeGenerator:
                 return ImageFont.load_default()
             else:
                 # Try to find a basic system font that works
-                basic_fonts = ['arial.ttf', 'Arial', 'DejaVuSans.ttf', 'Liberation Sans', 'Tahoma']
+                basic_fonts = ['arial.ttf', 'Arial', 'DejaVuSans.ttf', 'Liberation Sans']
                 for font_name in basic_fonts:
                     try:
                         return ImageFont.truetype(font_name, font_size)
@@ -1277,40 +943,148 @@ class ProfessionalBadgeGenerator:
                         return (int(len(text) * char_width), font_size)
     
     def draw_text_with_effects(self, image, text, x, y):
-        """Draw text with effects including RTL support"""
-        # Process text for display (Arabic shaping, RTL, etc.)
-        display_text = self.process_text_for_display(str(text))
-        
-        # Detect text direction
-        if self.text_direction.get() == "auto":
-            text_dir = self.detect_text_direction(str(text))
-        else:
-            text_dir = self.text_direction.get()
-        
-        # Update language indicator
-        if text_dir == "rtl":
-            self.preview_lang_indicator.config(text="Language: RTL (Arabic/Hebrew)", fg='green')
-        elif self.contains_arabic(str(text)):
-            self.preview_lang_indicator.config(text="Language: Arabic detected", fg='blue')
-        else:
-            self.preview_lang_indicator.config(text="Language: LTR (English/European)", fg='black')
-        
+        """Draw text with shadow, outline effects, decorations, and rotation"""
         # Convert image to RGBA for transparency support
         if image.mode != 'RGBA':
             image = image.convert('RGBA')
         
-        # Check if rotation is needed
+        # Check if rotation is needed - use simpler approach if no rotation
         rotation_angle = self.text_rotation.get()
         
         if rotation_angle == 0:
             # Simple approach without rotation
-            return self.draw_simple_text_with_effects(image, display_text, x, y, text_dir)
+            return self.draw_simple_text_with_effects(image, text, x, y)
+        
+        # Complex approach with rotation
+        # Create a temporary larger image for effects and rotation
+        padding = 200  # Increased padding for rotation
+        temp_width = image.width + padding * 2
+        temp_height = image.height + padding * 2
+        
+        # Create even larger canvas for rotation to prevent clipping
+        diagonal = int((temp_width**2 + temp_height**2)**0.5)
+        rot_width = rot_height = diagonal + padding
+        temp_image = Image.new('RGBA', (rot_width, rot_height), (0, 0, 0, 0))
+        # Paste original image at center
+        paste_x = (rot_width - image.width) // 2
+        paste_y = (rot_height - image.height) // 2
+        temp_image.paste(image, (paste_x, paste_y))
+        # Adjust coordinates for centered positioning
+        temp_x = x + paste_x
+        temp_y = y + paste_y
+        
+        draw = ImageDraw.Draw(temp_image)
+        font = self.get_font()
+        
+        # Calculate text alignment offset
+        text_width, text_height = self.get_text_dimensions(draw, text, font)
+        
+        # Adjust x position based on alignment
+        if self.text_align.get() == "center":
+            x_offset = -text_width // 2
+        elif self.text_align.get() == "right":
+            x_offset = -text_width
+        else:  # left alignment
+            x_offset = 0
+        
+        final_x = temp_x + x_offset
+        final_y = temp_y
+        
+        # Create text layer for rotation
+        if rotation_angle != 0:
+            # Create a separate image for the text
+            text_img = Image.new('RGBA', (temp_image.width, temp_image.height), (0, 0, 0, 0))
+            text_draw = ImageDraw.Draw(text_img)
         else:
-            # Complex approach with rotation
-            return self.draw_rotated_text_with_effects(image, display_text, x, y, text_dir, rotation_angle)
+            text_img = temp_image
+            text_draw = draw
+        
+        # Draw shadow on text layer
+        if self.text_shadow.get():
+            shadow_x = final_x + self.shadow_offset_x.get()
+            shadow_y = final_y + self.shadow_offset_y.get()
+            
+            # Create shadow on separate layer
+            shadow_image = Image.new('RGBA', (text_img.width, text_img.height), (0, 0, 0, 0))
+            shadow_draw = ImageDraw.Draw(shadow_image)
+            
+            # Ensure shadow color has proper alpha
+            shadow_color = self.shadow_color
+            if isinstance(shadow_color, str):
+                # Convert hex color to RGBA tuple
+                if shadow_color.startswith('#'):
+                    shadow_color = shadow_color[1:]
+                    if len(shadow_color) == 6:
+                        r, g, b = int(shadow_color[0:2], 16), int(shadow_color[2:4], 16), int(shadow_color[4:6], 16)
+                        shadow_color = (r, g, b, 200)  # Add some transparency
+            
+            shadow_draw.text((shadow_x, shadow_y), text, font=font, fill=shadow_color)
+            
+            # Apply blur if specified
+            if self.shadow_blur.get() > 0:
+                try:
+                    shadow_image = shadow_image.filter(ImageFilter.GaussianBlur(self.shadow_blur.get()))
+                except:
+                    pass  # Skip blur if it fails
+            
+            # Composite shadow
+            text_img = Image.alpha_composite(text_img, shadow_image)
+            text_draw = ImageDraw.Draw(text_img)
+        
+        # Draw outline on text layer
+        if self.text_outline.get():
+            outline_width = self.outline_width.get()
+            # Draw outline by drawing text multiple times around the main position
+            for dx in range(-outline_width, outline_width + 1):
+                for dy in range(-outline_width, outline_width + 1):
+                    if dx != 0 or dy != 0:  # Don't draw at center position
+                        text_draw.text((final_x + dx, final_y + dy), text, 
+                                     font=font, fill=self.outline_color)
+        
+        # Draw main text on text layer
+        text_draw.text((final_x, final_y), text, font=font, fill=self.font_color)
+        
+        # Draw text decorations
+        if self.text_underline.get() or self.text_strikethrough.get():
+            line_width = max(1, self.font_size.get() // 20)  # Scale line width with font size
+            
+            if self.text_underline.get():
+                # Draw underline
+                underline_y = final_y + text_height + line_width
+                text_draw.rectangle([
+                    final_x, underline_y,
+                    final_x + text_width, underline_y + line_width
+                ], fill=self.font_color)
+            
+            if self.text_strikethrough.get():
+                # Draw strikethrough
+                strike_y = final_y + text_height // 2
+                text_draw.rectangle([
+                    final_x, strike_y,
+                    final_x + text_width, strike_y + line_width
+                ], fill=self.font_color)
+        
+        # Apply rotation if needed
+        if rotation_angle != 0:
+            # Rotate the text layer
+            text_img = text_img.rotate(-rotation_angle, expand=False, fillcolor=(0, 0, 0, 0))
+            # Composite rotated text onto main image
+            temp_image = Image.alpha_composite(temp_image, text_img)
+        
+        # Convert back and crop to original size
+        if rotation_angle != 0:
+            # Crop back to original size considering rotation padding
+            crop_x = (temp_image.width - image.width) // 2
+            crop_y = (temp_image.height - image.height) // 2
+            result_image = temp_image.crop((crop_x, crop_y, 
+                                          crop_x + image.width, crop_y + image.height))
+        else:
+            result_image = temp_image.crop((padding, padding, temp_width - padding, temp_height - padding))
+        
+        return result_image.convert('RGB')
     
-    def draw_simple_text_with_effects(self, image, text, x, y, text_dir="ltr"):
-        """Draw text with effects without rotation"""
+    def draw_simple_text_with_effects(self, image, text, x, y):
+        """Draw text with effects without rotation (simpler, more reliable approach)"""
         # Create a temporary larger image for effects
         padding = 100
         temp_width = image.width + padding * 2
@@ -1323,21 +1097,15 @@ class ProfessionalBadgeGenerator:
         
         font = self.get_font()
         
-        # Calculate text dimensions
+        # Calculate text alignment offset with better fallback handling
         text_width, text_height = self.get_text_dimensions(draw, text, font)
         
-        # Adjust x position based on alignment and text direction
+        # Adjust x position based on alignment
         if self.text_align.get() == "center":
             x_offset = -text_width // 2
         elif self.text_align.get() == "right":
             x_offset = -text_width
         else:  # left alignment
-            x_offset = 0
-        
-        # For RTL text, adjust alignment if needed
-        if text_dir == "rtl" and self.text_align.get() == "left":
-            x_offset = -text_width
-        elif text_dir == "rtl" and self.text_align.get() == "right":
             x_offset = 0
         
         # Adjust coordinates for padding and alignment
@@ -1349,6 +1117,7 @@ class ProfessionalBadgeGenerator:
             shadow_x = temp_x + self.shadow_offset_x.get()
             shadow_y = temp_y + self.shadow_offset_y.get()
             
+            # Simple shadow drawing
             try:
                 draw.text((shadow_x, shadow_y), text, font=font, fill=self.shadow_color)
             except:
@@ -1402,141 +1171,6 @@ class ProfessionalBadgeGenerator:
         
         return result_image.convert('RGB')
     
-    def draw_rotated_text_with_effects(self, image, text, x, y, text_dir="ltr", rotation_angle=0):
-        """Draw rotated text with effects"""
-        # Create a temporary larger image for rotation
-        padding = 200
-        temp_width = image.width + padding * 2
-        temp_height = image.height + padding * 2
-        
-        # Create even larger canvas for rotation to prevent clipping
-        diagonal = int((temp_width**2 + temp_height**2)**0.5)
-        rot_width = rot_height = diagonal + padding
-        temp_image = Image.new('RGBA', (rot_width, rot_height), (0, 0, 0, 0))
-        
-        # Paste original image at center
-        paste_x = (rot_width - image.width) // 2
-        paste_y = (rot_height - image.height) // 2
-        temp_image.paste(image, (paste_x, paste_y))
-        
-        # Adjust coordinates for centered positioning
-        temp_x = x + paste_x
-        temp_y = y + paste_y
-        
-        draw = ImageDraw.Draw(temp_image)
-        font = self.get_font()
-        
-        # Calculate text dimensions
-        text_width, text_height = self.get_text_dimensions(draw, text, font)
-        
-        # Adjust x position based on alignment and text direction
-        if self.text_align.get() == "center":
-            x_offset = -text_width // 2
-        elif self.text_align.get() == "right":
-            x_offset = -text_width
-        else:  # left alignment
-            x_offset = 0
-        
-        # For RTL text, adjust alignment if needed
-        if text_dir == "rtl" and self.text_align.get() == "left":
-            x_offset = -text_width
-        elif text_dir == "rtl" and self.text_align.get() == "right":
-            x_offset = 0
-        
-        final_x = temp_x + x_offset
-        final_y = temp_y
-        
-        # Create a separate layer for text effects
-        text_layer = Image.new('RGBA', (rot_width, rot_height), (0, 0, 0, 0))
-        text_draw = ImageDraw.Draw(text_layer)
-        
-        # Draw shadow
-        if self.text_shadow.get():
-            shadow_x = final_x + self.shadow_offset_x.get()
-            shadow_y = final_y + self.shadow_offset_y.get()
-            
-            shadow_layer = Image.new('RGBA', (rot_width, rot_height), (0, 0, 0, 0))
-            shadow_draw = ImageDraw.Draw(shadow_layer)
-            
-            try:
-                shadow_draw.text((shadow_x, shadow_y), text, font=font, fill=self.shadow_color)
-            except:
-                shadow_draw.text((shadow_x, shadow_y), text, font=font, fill='gray')
-            
-            # Apply blur if specified
-            if self.shadow_blur.get() > 0:
-                try:
-                    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(self.shadow_blur.get()))
-                except:
-                    pass
-            
-            # Composite shadow
-            text_layer = Image.alpha_composite(text_layer, shadow_layer)
-            text_draw = ImageDraw.Draw(text_layer)
-        
-        # Draw outline
-        if self.text_outline.get():
-            outline_width = self.outline_width.get()
-            outline_layer = Image.new('RGBA', (rot_width, rot_height), (0, 0, 0, 0))
-            outline_draw = ImageDraw.Draw(outline_layer)
-            
-            # Draw outline by drawing text multiple times
-            for dx in range(-outline_width, outline_width + 1):
-                for dy in range(-outline_width, outline_width + 1):
-                    if dx != 0 or dy != 0:
-                        try:
-                            outline_draw.text((final_x + dx, final_y + dy), text, 
-                                            font=font, fill=self.outline_color)
-                        except:
-                            outline_draw.text((final_x + dx, final_y + dy), text, 
-                                            font=font, fill='white')
-            
-            # Composite outline
-            text_layer = Image.alpha_composite(text_layer, outline_layer)
-            text_draw = ImageDraw.Draw(text_layer)
-        
-        # Draw main text
-        try:
-            text_draw.text((final_x, final_y), text, font=font, fill=self.font_color)
-        except:
-            text_draw.text((final_x, final_y), text, font=font, fill='black')
-        
-        # Draw text decorations
-        if self.text_underline.get() or self.text_strikethrough.get():
-            line_width = max(1, self.font_size.get() // 20)
-            
-            if self.text_underline.get():
-                underline_y = final_y + text_height + line_width
-                text_draw.rectangle([
-                    final_x, underline_y,
-                    final_x + text_width, underline_y + line_width
-                ], fill=self.font_color)
-            
-            if self.text_strikethrough.get():
-                strike_y = final_y + text_height // 2
-                text_draw.rectangle([
-                    final_x, strike_y,
-                    final_x + text_width, strike_y + line_width
-                ], fill=self.font_color)
-        
-        # Rotate the text layer
-        if rotation_angle != 0:
-            text_layer = text_layer.rotate(-rotation_angle, expand=False, fillcolor=(0, 0, 0, 0))
-        
-        # Composite text layer onto main image
-        result_image = Image.alpha_composite(temp_image, text_layer)
-        
-        # Crop back to original size
-        crop_x = (result_image.width - image.width) // 2
-        crop_y = (result_image.height - image.height) // 2
-        result_image = result_image.crop((
-            crop_x, crop_y, 
-            crop_x + image.width, 
-            crop_y + image.height
-        ))
-        
-        return result_image.convert('RGB')
-    
     def update_preview(self):
         """Update the preview canvas"""
         if not self.template_image:
@@ -1545,13 +1179,7 @@ class ProfessionalBadgeGenerator:
         try:
             # Create preview image
             preview_image = self.template_image.copy()
-            
-            # Choose sample text based on font
-            font_name = self.font_family.get()
-            if font_name in self.arabic_fonts:
-                sample_text = "أحمد محمد"  # Arabic sample
-            else:
-                sample_text = "Sample Name"
+            sample_text = "Sample Name"
             
             # Apply text with effects
             preview_image = self.draw_text_with_effects(
@@ -1563,7 +1191,7 @@ class ProfessionalBadgeGenerator:
             display_width = int(preview_image.width * self.canvas_scale)
             display_height = int(preview_image.height * self.canvas_scale)
             
-            if abs(self.canvas_scale - 1.0) > 0.01:
+            if abs(self.canvas_scale - 1.0) > 0.01:  # Avoid floating point comparison
                 display_image = preview_image.resize((display_width, display_height), Image.Resampling.LANCZOS)
             else:
                 display_image = preview_image
@@ -1617,18 +1245,8 @@ class ProfessionalBadgeGenerator:
         label.image = photo  # Keep reference
         label.pack(padx=20, pady=20)
         
-        # Add text information
-        text_info = tk.Frame(preview_window, bg='#2c3e50')
-        text_info.pack(pady=10)
-        
-        # Show if Arabic is detected
-        if self.contains_arabic(str(name)):
-            lang_label = tk.Label(text_info, text="🔤 Arabic text detected", 
-                                 font=('Arial', 10, 'bold'), fg='#3498db', bg='#2c3e50')
-            lang_label.pack()
-        
         # Center window
-        preview_window.geometry(f"{image.width + 40}x{image.height + 100}")
+        preview_window.geometry(f"{image.width + 40}x{image.height + 60}")
         preview_window.transient(self.root)
         preview_window.grab_set()
     
@@ -1650,27 +1268,19 @@ class ProfessionalBadgeGenerator:
         event_folder = os.path.join(self.output_dir.get(), self.event_name.get().strip())
         os.makedirs(event_folder, exist_ok=True)
         
-        # Create subfolder for Arabic names if needed
-        arabic_names_exist = any(self.contains_arabic(str(name)) for name in self.names_list)
-        
-        if arabic_names_exist:
-            arabic_folder = os.path.join(event_folder, "Arabic_Names")
-            os.makedirs(arabic_folder, exist_ok=True)
-        
         # Progress dialog
         progress_window = self.create_progress_window()
         
         def generate_in_thread():
             try:
                 total_names = len(self.names_list)
-                arabic_count = 0
                 
                 for i, name in enumerate(self.names_list):
                     # Update progress
                     progress = (i + 1) / total_names * 100
                     progress_window.children['!progressbar']['value'] = progress
                     progress_window.children['!label2'].config(
-                        text=f"Generating badge {i + 1} of {total_names}: {name[:30]}...")
+                        text=f"Generating badge {i + 1} of {total_names}: {name}")
                     progress_window.update()
                     
                     # Generate badge
@@ -1681,32 +1291,21 @@ class ProfessionalBadgeGenerator:
                     )
                     
                     # Create safe filename
-                    safe_name = "".join(c for c in str(name) if c.isalnum() or c in (' ', '_', '-', '.')).strip()
+                    safe_name = "".join(c for c in str(name) if c.isalnum() or c in (' ', '_', '-')).strip()
                     safe_name = safe_name.replace(' ', '_')
                     filename = f"{safe_name}_badge.png"
-                    
-                    # Save to appropriate folder
-                    if self.contains_arabic(str(name)):
-                        filepath = os.path.join(event_folder, "Arabic_Names", filename)
-                        arabic_count += 1
-                    else:
-                        filepath = os.path.join(event_folder, filename)
+                    filepath = os.path.join(event_folder, filename)
                     
                     # Save badge
-                    result_image.save(filepath, 'PNG', quality=95)
+                    result_image.save(filepath, 'PNG')
                 
                 progress_window.destroy()
                 
-                # Prepare success message
                 success_msg = (f"🎉 Success!\n\n"
                              f"Generated {total_names} badges successfully!\n"
                              f"Event: {self.event_name.get()}\n"
-                             f"Saved to: {event_folder}")
-                
-                if arabic_count > 0:
-                    success_msg += f"\n\n📁 Arabic names ({arabic_count}) saved in separate folder: 'Arabic_Names'"
-                
-                success_msg += "\n\nWould you like to open the output folder?"
+                             f"Saved to: {event_folder}\n\n"
+                             f"Would you like to open the output folder?")
                 
                 if messagebox.askyesno("Success", success_msg):
                     os.startfile(event_folder)
@@ -1722,7 +1321,7 @@ class ProfessionalBadgeGenerator:
         """Create progress dialog"""
         progress_window = tk.Toplevel(self.root)
         progress_window.title("Generating Badges...")
-        progress_window.geometry("500x140")
+        progress_window.geometry("450x120")
         progress_window.configure(bg='#2c3e50')
         progress_window.transient(self.root)
         progress_window.grab_set()
@@ -1739,21 +1338,13 @@ class ProfessionalBadgeGenerator:
         title_label.pack(pady=10)
         
         # Progress bar
-        progress_bar = ttk.Progressbar(progress_window, length=450, mode='determinate')
+        progress_bar = ttk.Progressbar(progress_window, length=400, mode='determinate')
         progress_bar.pack(pady=10)
         
         # Status label
         status_label = tk.Label(progress_window, text="Starting...", 
                                font=('Arial', 10), fg='white', bg='#2c3e50')
         status_label.pack()
-        
-        # Arabic support indicator
-        arabic_count = sum(1 for name in self.names_list if self.contains_arabic(str(name)))
-        if arabic_count > 0:
-            arabic_label = tk.Label(progress_window, 
-                                   text=f"📝 Processing {arabic_count} Arabic names...",
-                                   font=('Arial', 9), fg='#3498db', bg='#2c3e50')
-            arabic_label.pack(pady=5)
         
         return progress_window
     
@@ -1783,9 +1374,7 @@ class ProfessionalBadgeGenerator:
             'position_preset': self.position_preset.get(),
             'text_underline': self.text_underline.get(),
             'text_strikethrough': self.text_strikethrough.get(),
-            'text_rotation': self.text_rotation.get(),
-            'arabic_support': self.arabic_support.get(),
-            'text_direction': self.text_direction.get()
+            'text_rotation': self.text_rotation.get()
         }
         
         file_path = filedialog.asksaveasfilename(
@@ -1844,28 +1433,24 @@ class ProfessionalBadgeGenerator:
         # Show welcome message
         welcome_msg = (
             "🎫 Welcome to Professional Badge Generator!\n\n"
-            "✨ Multi-language Support:\n"
-            "• English, العربية (Arabic), Français, Español, etc.\n"
-            "• Automatic Arabic text detection\n"
-            "• Right-to-Left (RTL) text support\n"
-            "• Arabic font recommendations\n\n"
             "Quick Start Guide:\n"
             "1️⃣ Enter your event name\n"
             "2️⃣ Select your badge template image\n"
             "3️⃣ Load your names list (TXT/CSV/Excel)\n"
             "4️⃣ Customize text style and position\n"
             "5️⃣ Click 'Generate All Badges' to create them!\n\n"
-            "For Arabic text support:\n"
-            "• Install: pip install arabic-reshaper python-bidi\n"
-            "• Use Arabic-supporting fonts\n"
-            "• Enable Arabic/RTL support in Language tab\n\n"
+            "✨ New Features:\n"
+            "• 25+ professional fonts available\n"
+            "• Text decorations (underline, strikethrough)\n"
+            "• Text rotation (-180° to +180°)\n"
+            "• Click-to-position text placement\n"
+            "• Advanced text effects (shadow, outline, blur)\n"
+            "• Font sizes up to 300px\n"
+            "• Event-based folder organization\n"
+            "• Live preview with zoom controls\n"
+            "• Save/Load configurations\n\n"
             "Ready to create amazing badges? 🚀"
         )
-        
-        # Check for RTL libraries
-        if not self.arabic_reshaping_available or not self.bidi_available:
-            welcome_msg += "\n\n⚠️ Note: Install RTL libraries for full Arabic support:\n"
-            welcome_msg += "pip install arabic-reshaper python-bidi"
         
         messagebox.showinfo("Welcome", welcome_msg)
         
