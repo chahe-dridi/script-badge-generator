@@ -24,11 +24,23 @@
   border-bottom: 1px solid var(--bdr);
   flex-shrink: 0;
   background: var(--bg3);
+  overflow-x: auto;
+}
+
+.dtabs::-webkit-scrollbar {
+  height: 4px;
+}
+.dtabs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.dtabs::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .dtab {
-  flex: 1;
-  padding: 12px 8px;
+  flex: 0 0 auto;
+  padding: 12px 10px;
   background: none;
   border: none;
   font-family: var(--fui);
