@@ -119,22 +119,44 @@ export function BadgeProvider({ children }) {
   }, [templateImg, names, namesFile, cfg, notify]);
 
   const regenOne = useCallback(
-    (idx, newName) => {
-      const name = newName ?? gallery[idx].name;
-      const canvas = document.createElement("canvas");
-      renderBadgeToCanvas(canvas, templateImg, name, cfg);
-      const dataUrl = canvasToDataURL(canvas);
-      setGallery((g) =>
-        g.map((b, i) => (i === idx ? { name, dataUrl, ok: !!dataUrl } : b))
-      );
-      return dataUrl;
+    (id, newName, overrides) => {
+      setGallery((g) => {
+        const itemIdx = g.findIndex(b => b._i === id);
+        if (itemIdx === -1) return g;
+        
+        const item = g[itemIdx];
+        const name = newName !== undefined ? newName : item.name;
+        
+        let newCustomCfg = item.customCfg;
+        if (overrides !== undefined) {
+          newCustomCfg = { ...(item.customCfg || {}) };
+          for (const k in overrides) {
+            if (overrides[k] === undefined) {
+              delete newCustomCfg[k];
+            } else {
+              newCustomCfg[k] = overrides[k];
+            }
+          }
+          if (Object.keys(newCustomCfg).length === 0) newCustomCfg = null;
+        }
+        
+        const bCfg = { ...cfg, ...(newCustomCfg || {}) };
+        
+        const canvas = document.createElement("canvas");
+        renderBadgeToCanvas(canvas, templateImg, name, bCfg);
+        const dataUrl = canvasToDataURL(canvas);
+        
+        const newG = [...g];
+        newG[itemIdx] = { ...item, name, dataUrl, ok: !!dataUrl, customCfg: newCustomCfg };
+        return newG;
+      });
+      return true;
     },
-    [gallery, templateImg, cfg]
+    [templateImg, cfg]
   );
 
-  const removeBadge = useCallback((idx) => {
-    setGallery((g) => g.filter((_, i) => i !== idx));
-  }, []);
+  const removeBadge = useCallback((id) => {
+    setGallery((g) => g.filter((b) => b._i !== id));
 
   const regenAll = useCallback(async () => {
     if (!templateImg || gallery.length === 0) return;

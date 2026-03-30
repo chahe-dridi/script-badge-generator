@@ -45,10 +45,18 @@ export default function GalleryPage() {
     return false;
   };
 
-  const handleRegenOne = async (idx, newName) => {
+  const handleRegenOne = async (idx, newName, overrides) => {
     setRegenSel(true);
-    await regenOne(idx, newName);
+    await regenOne(idx, newName, overrides);
     setRegenSel(false);
+  };
+
+  // Helper for quick override updates
+  const updateOverride = (key, val) => {
+    if (selIdx === null) return;
+    const badge = gallery.find(b => b._i === selIdx);
+    const overrides = { ...(badge?.customCfg || {}), [key]: val };
+    regenOne(selIdx, badge?.name, overrides);
   };
 
   return (
@@ -182,22 +190,86 @@ export default function GalleryPage() {
 
             <div className='gside-body'>
               <label className='dlbl'>NAME ON BADGE</label>
-              <input
-                className='gside-inp'
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleRegenOne(selIdx, editName.trim());
-                }}
-              />
-
-              <div className='gside-actions'>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  className='gside-inp'
+                  style={{ flex: 1 }}
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleRegenOne(selIdx, editName.trim());
+                  }}
+                />
                 <button
                   className='gside-btn'
+                  style={{ padding: '0 12px', flexShrink: 0 }}
                   onClick={() => handleRegenOne(selIdx, editName.trim())}
                 >
-                  {regenSel ? '↺ Saving…' : '↺ Save & Update'}
+                  {regenSel ? '↻' : '✔ Save'}
                 </button>
+              </div>
+
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg2)', padding: '12px', borderRadius: '8px', border: '1px solid var(--bdr)' }}>
+                <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--a)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  ✨ Override Design
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <label className='dlbl'>FONT SIZE</label>
+                    <span style={{ fontSize: '10px', color: 'var(--muted)' }}>{selectedBadge.customCfg?.font_size ?? cfg.font_size}px</span>
+                  </div>
+                  <input type='range' min='8' max='200' 
+                    value={selectedBadge.customCfg?.font_size ?? cfg.font_size} 
+                    onChange={(e) => updateOverride('font_size', Number(e.target.value))} 
+                    style={{ width: '100%', cursor: 'pointer' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <label className='dlbl'>X POSITION</label>
+                    <span style={{ fontSize: '10px', color: 'var(--muted)' }}>{selectedBadge.customCfg?.text_x ?? cfg.text_x}px</span>
+                  </div>
+                  <input type='range' min='0' max='2000' 
+                    value={selectedBadge.customCfg?.text_x ?? cfg.text_x} 
+                    onChange={(e) => updateOverride('text_x', Number(e.target.value))} 
+                    style={{ width: '100%', cursor: 'pointer' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <label className='dlbl'>Y POSITION</label>
+                    <span style={{ fontSize: '10px', color: 'var(--muted)' }}>{selectedBadge.customCfg?.text_y ?? cfg.text_y}px</span>
+                  </div>
+                  <input type='range' min='0' max='2000' 
+                    value={selectedBadge.customCfg?.text_y ?? cfg.text_y} 
+                    onChange={(e) => updateOverride('text_y', Number(e.target.value))} 
+                    style={{ width: '100%', cursor: 'pointer' }} />
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className='dlbl'>TEXT COLOR</label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input type='color' 
+                      value={selectedBadge.customCfg?.font_color ?? cfg.font_color} 
+                      onChange={(e) => updateOverride('font_color', e.target.value)} 
+                      style={{ width: '30px', height: '30px', padding: '0', border: 'none', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }} />
+                    <span style={{ fontSize: '12px', fontFamily: 'var(--fmono)' }}>
+                      {selectedBadge.customCfg?.font_color ?? cfg.font_color}
+                    </span>
+                    {(selectedBadge.customCfg && Object.keys(selectedBadge.customCfg).length > 0) && (
+                       <button 
+                         onClick={() => regenOne(selIdx, selectedBadge.name, { font_size: undefined, text_x: undefined, text_y: undefined, font_color: undefined })}
+                         style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid var(--bdr)', color: 'var(--txt)', fontSize: '10px', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                       >
+                         Reset
+                       </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className='gside-actions' style={{ marginTop: '16px' }}>
                 {selectedBadge.dataUrl && (
                   <a
                     className='gside-btn gside-dl'
