@@ -9,12 +9,13 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const STEPS = [
-    { label: "Setup", path: "/" },
+    { label: "Setup", path: "/setup" },
     { label: "Design", path: "/design" },
     { label: "Gallery", path: "/gallery" },
     { label: "Export", path: "/export" }
   ];
 
+  const isLanding = location.pathname === "/";
   const currentIndex = STEPS.findIndex(s => s.path === location.pathname);
   const event_name = cfg.event_name;
 
@@ -22,11 +23,11 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="nav-brand">
         <div className="nav-brand-mark">B</div>
-        <span className="nav-brand-name">BadgeGen</span>
-        {event_name && <span className="nav-event">{event_name}</span>}
+        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}><span className="nav-brand-name" style={{ color: "var(--txt)" }}>BadgeGen</span></Link>
+        {!isLanding && event_name && <span className="nav-event">{event_name}</span>}
       </div>
 
-      <div className="nav-steps">
+      {!isLanding && (<div className="nav-steps">
         {STEPS.map((step, i) => (
           <React.Fragment key={step.label}>
             <button
@@ -43,9 +44,10 @@ export default function Navbar() {
           </React.Fragment>
         ))}
       </div>
+      )}
 
       <div className="nav-end">
-        {currentIndex > 0 && (
+        {!isLanding && currentIndex > 0 && (
           <button
             className="nav-back"
             onClick={() => navigate(STEPS[currentIndex - 1].path)}
@@ -53,6 +55,7 @@ export default function Navbar() {
             ← Back
           </button>
         )}
+        {isLanding && <button className="cta cta-sm cta-on" onClick={() => navigate("/setup")}>Launch App →</button>}
       </div>
     </nav>
   );

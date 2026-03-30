@@ -1,0 +1,118 @@
+/* Landing Page Styles */
+
+.pg-landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 60px 20px;
+  background: var(--bg);
+  text-align: center;
+  overflow-y: auto;
+}
+
+.landing-hero {
+  max-width: 800px;
+  margin-bottom: 60px;
+  animation: fadeUp 0.6s ease-out forwards;
+}
+
+.landing-title {
+  font-family: var(--fui);
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: var(--txt);
+  letter-spacing: -0.02em;
+}
+
+.landing-subtitle {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landing-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.landing-actions .cta-lg {
+  padding: 16px 32px;
+  font-size: 16px;
+  border-radius: var(--rd);
+}
+
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 20px;
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+.feat-card {
+  background: var(--bg2);
+  border: 1px solid var(--bdr);
+  border-radius: var(--rd);
+  padding: 32px 24px;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.feat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--a);
+}
+
+.feat-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.feat-card h3 {
+  font-family: var(--fui);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 12px;
+}
+
+.feat-card p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-title {
+    font-size: 40px;
+  }
+  .landing-subtitle {
+    font-size: 18px;
+  }
+  .landing-features {
+    grid-template-columns: 1fr;
+  }
+}

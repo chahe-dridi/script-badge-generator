@@ -9,6 +9,7 @@ import SetupPage from "./pages/SetupPage";
 import DesignPage from "./pages/DesignPage";
 import GalleryPage from "./pages/GalleryPage";
 import ExportPage from "./pages/ExportPage";
+import LandingPage from "./pages/LandingPage";
 
 export default function App() {
   return (
@@ -17,11 +18,8 @@ export default function App() {
       <Toast />
       <Layout>
         <Routes>
-          <Route path="/" element={<SetupPage />} />
-          <Route path="/design" element={<DesignPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/export" element={<ExportPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/setup" element={<SetupPage />} />
         </Routes>
       </Layout>
     </>
