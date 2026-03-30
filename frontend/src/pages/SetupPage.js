@@ -1,23 +1,54 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useBadgeContext } from "../context/BadgeContext";
+import { parseNamesFile } from "../utils/canvas";
 import "../styles/Pages-Setup.css";
 
-export default function SetupPage({
-  templateImg,
-  templateFile,
-  namesFile,
-  names,
-  cfg,
-  dragOver,
-  tRef,
-  nRef,
-  onLoadTemplate,
-  onLoadNames,
-  onDrop,
-  onSetDragOver,
-  onEventNameChange,
-  onContinue,
-  previewCanvasRef,
-}) {
+export default function SetupPage() {
+  const navigate = useNavigate();
+  const {
+    cfg, updateCfg,
+    templateFile, setTF,
+    templateImg, setTImg,
+    namesFile, setNF,
+    names, setNames,
+    setGallery, notify
+  } = useBadgeContext();
+
+  const [dragOver, setDO] = useState(null);
+  const tRef = useRef();
+  const nRef = useRef();
+  const previewCanvasRef = useRef();
+
+  const loadTemplate = (file) => {
+    if (!file || !file.type.startsWith("image/"))
+      return notify("Upload an image file", "error");
+    setTF(file);
+    setGallery([]);
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => setTImg(img);
+    img.src = url;
+    notify("Template loaded ✓", "success");
+  };
+
+  const loadNames = async (file) => {
+    setNF(file);
+    const arr = await parseNamesFile(file);
+    setNames(arr);
+    if (arr.length) notify(`${arr.length} names loaded ✓`, "success");
+    else notify("File loaded — Excel names resolved at generation time", "info");
+  };
+
+  const onDrop = (e, type) => {
+    e.preventDefault();
+    setDO(null);
+    const f = e.dataTransfer.files[0];
+    if (!f) return;
+    if (type === "tpl") loadTemplate(f);
+    else loadNames(f);
+  };
+
   const canDesign = !!templateImg;
 
   return (
@@ -37,12 +68,12 @@ export default function SetupPage({
           className={`ucard ${templateImg ? "ucard-done" : ""} ${
             dragOver === "tpl" ? "ucard-drag" : ""
           }`}
-          onClick={() => tRef.current.click()}
+          onClick={() => tRef.current?.click()}
           onDragOver={(e) => {
             e.preventDefault();
-            onSetDragOver("tpl");
+            setDO("tpl");
           }}
-          onDragLeave={() => onSetDragOver(null)}
+          onDragLeave={() => setDO(null)}
           onDrop={(e) => onDrop(e, "tpl")}
         >
           <input
@@ -50,9 +81,9 @@ export default function SetupPage({
             type="file"
             accept="image/*"
             hidden
-            onChange={(e) => onLoadTemplate(e.target.files[0])}
+            onChange={(e) => loadTemplate(e.target.files[0])}
           />
-          {templateImg ? (
+          {templateImg && templateFile ? (
             <>
               <div className="ucard-thumb">
                 <canvas ref={previewCanvasRef} style={{ display: "none" }} />
@@ -82,12 +113,12 @@ export default function SetupPage({
           className={`ucard ${namesFile ? "ucard-done" : ""} ${
             dragOver === "names" ? "ucard-drag" : ""
           }`}
-          onClick={() => nRef.current.click()}
+          onClick={() => nRef.current?.click()}
           onDragOver={(e) => {
             e.preventDefault();
-            onSetDragOver("names");
+            setDO("names");
           }}
-          onDragLeave={() => onSetDragOver(null)}
+          onDragLeave={() => setDO(null)}
           onDrop={(e) => onDrop(e, "names")}
         >
           <input
@@ -95,7 +126,7 @@ export default function SetupPage({
             type="file"
             accept=".txt,.csv,.xlsx,.xls"
             hidden
-            onChange={(e) => onLoadNames(e.target.files[0])}
+            onChange={(e) => loadNames(e.target.files[0])}
           />
           {namesFile ? (
             <>
@@ -141,7 +172,7 @@ export default function SetupPage({
             className="event-inp"
             placeholder="e.g. Tech Summit 2025"
             value={cfg.event_name}
-            onChange={(e) => onEventNameChange(e.target.value)}
+            onChange={(e) => updateCfg("event_name", e.target.value)}
             onClick={(e) => e.stopPropagation()}
           />
           <div className="ucard-hint">Becomes the folder name in your ZIP</div>
@@ -152,7 +183,7 @@ export default function SetupPage({
         <button
           className={`cta ${canDesign ? "cta-on" : ""}`}
           disabled={!canDesign}
-          onClick={onContinue}
+          onClick={() => navigate('/design')}
         >
           Continue to Design →
         </button>

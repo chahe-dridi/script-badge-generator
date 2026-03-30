@@ -3,21 +3,17 @@
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   background: var(--bg);
-  overflow: hidden;
 }
 
 .layout-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
   position: relative;
   width: 100%;
-  min-height: 0;
   padding: 0;
 }
 
@@ -40,7 +36,7 @@
 }
 
 .noise {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 1;
@@ -63,27 +59,23 @@
 /* Responsive - Tablets and smaller */
 @media (max-width: 1024px) {
   .layout {
-    height: 100vh;
+    min-height: 100vh;
   }
 
   .layout-main {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
   }
 }
 
 /* Responsive - Mobile */
 @media (max-width: 768px) {
   .layout {
-    height: 100vh;
+    min-height: 100vh;
     flex-direction: column;
   }
 
   .layout-main {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
     width: 100%;
   }
 

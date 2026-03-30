@@ -3,10 +3,10 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "../styles/Layout.css";
 
-export default function Layout({ page, onPageChange, event_name, children }) {
+export default function Layout({ children }) {
   return (
     <div className="layout">
-      <Navbar page={page} onPageChange={onPageChange} event_name={event_name} />
+      <Navbar />
       <div className="layout-main">{children}</div>
       <Footer />
     </div>
