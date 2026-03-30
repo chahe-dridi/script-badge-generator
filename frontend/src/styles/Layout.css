@@ -1,0 +1,87 @@
+/* Layout Component Styles */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg);
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  padding: 0;
+}
+
+/* Scrollbar styling */
+.layout-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-main::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+.layout-main::-webkit-scrollbar-thumb {
+  background: var(--bdr2);
+  border-radius: 4px;
+}
+
+.layout-main::-webkit-scrollbar-thumb:hover {
+  background: var(--bdr);
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+}
+
+/* Page container - ensure proper sizing */
+.pg {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  padding: 0;
+  margin: 0;
+}
+
+/* Responsive - Tablets and smaller */
+@media (max-width: 1024px) {
+  .layout {
+    min-height: 100vh;
+  }
+
+  .layout-main {
+    flex: 1;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .layout {
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  .layout-main {
+    flex: 1;
+    width: 100%;
+  }
+
+  .pg {
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+  }
+}
