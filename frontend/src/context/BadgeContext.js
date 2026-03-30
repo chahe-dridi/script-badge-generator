@@ -157,6 +157,7 @@ export function BadgeProvider({ children }) {
 
   const removeBadge = useCallback((id) => {
     setGallery((g) => g.filter((b) => b._i !== id));
+  }, []);
 
   const regenAll = useCallback(async () => {
     if (!templateImg || gallery.length === 0) return;
