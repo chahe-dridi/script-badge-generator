@@ -20,6 +20,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/setup" element={<SetupPage />} />
+          <Route path="/design" element={<DesignPage />} />       
+          <Route path="/gallery" element={<GalleryPage />} />     
+          <Route path="/export" element={<ExportPage />} />       
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
     </>
