@@ -4,8 +4,9 @@
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(42, 42, 74, 0.95) 100%);
   border-top: 1px solid rgba(184, 255, 69, 0.1);
   padding: 48px 28px 24px;
-  margin-top: auto;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .footer-content {

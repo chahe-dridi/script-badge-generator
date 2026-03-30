@@ -4,8 +4,8 @@
   height: 70px;
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 28px;
+  gap: 16px;
+  padding: 0 20px;
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(26, 26, 46, 0.92) 100%);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(184, 255, 69, 0.1);
@@ -14,14 +14,18 @@
   z-index: 200;
   flex-shrink: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
-  min-width: 280px;
+  min-width: 180px;
+  max-width: 250px;
 }
 
 .nav-brand-mark {
@@ -66,7 +70,18 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  min-width: 400px;
+  min-width: 300px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.nav-steps::-webkit-scrollbar {
+  height: 3px;
+}
+
+.nav-steps::-webkit-scrollbar-thumb {
+  background: rgba(184, 255, 69, 0.2);
+  border-radius: 2px;
 }
 
 .nav-step {
@@ -181,12 +196,13 @@
 /* Responsive */
 @media (max-width: 1200px) {
   .navbar {
-    padding: 0 16px;
-    gap: 16px;
+    padding: 0 14px;
+    gap: 12px;
   }
 
   .nav-brand {
-    min-width: auto;
+    min-width: 150px;
+    max-width: 150px;
   }
 
   .nav-event {
@@ -194,33 +210,71 @@
   }
 
   .nav-steps {
-    min-width: auto;
-    gap: 4px;
+    min-width: 200px;
+    gap: 0;
+  }
+
+  .nav-step-lbl {
+    font-size: 10px;
+  }
+
+  .nav-step-line {
+    width: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .nav-brand {
+    min-width: 140px;
+  }
+
+  .nav-brand-name {
+    font-size: 15px;
   }
 
   .nav-step-lbl {
     display: none;
   }
 
+  .nav-step-num {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .nav-steps {
+    min-width: auto;
+  }
+
   .nav-step-line {
-    width: 20px;
+    width: 8px;
   }
 }
 
 @media (max-width: 768px) {
   .navbar {
     height: 60px;
-    padding: 0 12px;
+    padding: 0 10px;
+    gap: 8px;
   }
 
   .nav-brand-mark {
     width: 32px;
     height: 32px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .nav-brand-name {
-    font-size: 16px;
+    font-size: 14px;
+  }
+
+  .nav-brand {
+    min-width: 90px;
   }
 
   .nav-steps {
@@ -229,6 +283,37 @@
 
   .nav-back {
     padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .nav-end {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    height: 56px;
+    padding: 0 8px;
+  }
+
+  .nav-brand {
+    min-width: 70px;
+  }
+
+  .nav-brand-mark {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+
+  .nav-brand-name {
     font-size: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  .nav-back {
+    padding: 5px 10px;
+    font-size: 10px;
   }
 }

@@ -1,8 +1,9 @@
 /* Page 1: Design Styles */
 
 .pg-design {
+  display: flex;
   flex-direction: row;
-  height: calc(100vh - 70px);
+  position: relative;
 }
 
 /* Aside controls */
@@ -15,6 +16,7 @@
   border-right: 1px solid var(--bdr);
   overflow: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .dtabs {
@@ -475,6 +477,7 @@
   background: var(--bg);
   padding: 28px;
   overflow: hidden;
+  min-width: 0;
 }
 
 .prev-header {
@@ -511,13 +514,13 @@
   border: 1px solid var(--bdr);
   background: var(--bg2);
   width: 100%;
-  max-height: calc(100vh - 250px);
+  min-height: 300px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .prev-canvas {
   max-width: 100%;
-  max-height: calc(100vh - 250px);
+  max-height: 100%;
   display: block;
   object-fit: contain;
   image-rendering: crisp-edges;

@@ -1,12 +1,15 @@
 /* Page 0: Setup Styles */
 
 .pg-setup {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 40px;
-  overflow-y: auto;
   padding: 40px 20px;
   background: var(--bg);
+  width: 100%;
+  position: relative;
 }
 
 .setup-hero {

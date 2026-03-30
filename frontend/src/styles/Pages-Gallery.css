@@ -1,10 +1,11 @@
 /* Page 2: Gallery Styles */
 
 .pg-gallery {
-  height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
   background: var(--bg);
+  width: 100%;
+  position: relative;
 }
 
 /* Gallery toolbar */
