@@ -1,319 +1,391 @@
-/* Navbar Styles */
+/* Navbar */
 
 .navbar {
-  height: 70px;
+  height: 64px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 20px;
-  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(26, 26, 46, 0.92) 100%);
+  gap: 12px;
+  padding: 0 24px;
+  background: rgba(10, 10, 15, 0.9);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(184, 255, 69, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bdr);
   position: sticky;
   top: 0;
   z-index: 200;
   flex-shrink: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
+
+/* ── Brand ── */
 
 .nav-brand {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  min-width: 180px;
-  max-width: 250px;
+}
+
+.nav-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
 }
 
 .nav-brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #b8ff45, #8fff2e);
-  color: #1a1a2e;
-  font-weight: 900;
-  font-size: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #b8ff45 0%, #7de820 100%);
+  color: #0a0a0f;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(184, 255, 69, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(184,255,69,0.2), 0 4px 12px rgba(184,255,69,0.25);
 }
 
 .nav-brand-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #fff;
-  text-transform: uppercase;
+  letter-spacing: 0;          /* Syne 800 is naturally tight — don't compress further */
+  line-height: 1;             /* Collapse extra line-box space; descenders handled by padding */
+  padding-bottom: 3px;        /* Room for Syne's 'g' / 'y' / 'p' descenders */
+  color: var(--txt);
+  font-family: var(--fui);
 }
 
 .nav-event {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #b8ff45;
-  margin-left: 8px;
-  padding: 4px 10px;
-  background: rgba(184, 255, 69, 0.1);
-  border-radius: 6px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  color: var(--a);
+  padding: 3px 8px;
+  background: rgba(184,255,69,0.08);
+  border: 1px solid rgba(184,255,69,0.18);
+  border-radius: 20px;
   white-space: nowrap;
-  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
+
+/* ── Step progress ── */
 
 .nav-steps {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Mobile counter — hidden on large screens */
+.nav-steps-counter {
+  display: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  font-family: var(--fmono);
+  letter-spacing: 0.02em;
+}
+
+.nav-steps-list {
+  display: flex;
+  align-items: center;
   gap: 0;
-  min-width: 300px;
-  overflow-x: auto;
-  overflow-y: hidden;
 }
 
-.nav-steps::-webkit-scrollbar {
-  height: 3px;
-}
-
-.nav-steps::-webkit-scrollbar-thumb {
-  background: rgba(184, 255, 69, 0.2);
-  border-radius: 2px;
-}
+/* ── Individual step ── */
 
 .nav-step {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   background: none;
   border: none;
-  cursor: pointer;
-  padding: 6px 10px;
+  cursor: default;
+  padding: 6px 12px;
   border-radius: 8px;
-  transition: all 0.2s ease;
-  position: relative;
+  transition: background 0.15s ease;
+  white-space: nowrap;
 }
 
-.nav-step:disabled {
+.nav-step-disabled {
+  opacity: 0.4;
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-.nav-step:not(:disabled):hover {
-  background: rgba(184, 255, 69, 0.08);
+.nav-step-done {
+  cursor: pointer;
 }
 
-.nav-step-num {
+.nav-step-done:hover {
+  background: rgba(184,255,69,0.07);
+}
+
+.nav-step-icon {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1.5px solid rgba(255,255,255,0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255,255,255,0.35);
   transition: all 0.2s ease;
-  font-family: "DM Mono", monospace;
+  flex-shrink: 0;
 }
 
 .nav-step-lbl {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255,255,255,0.35);
   transition: color 0.2s ease;
-  white-space: nowrap;
+  font-family: var(--fui);
 }
 
-.nav-step.nav-step-active .nav-step-num {
-  background: linear-gradient(135deg, #b8ff45, #8fff2e);
-  border-color: #b8ff45;
-  color: #1a1a2e;
-  box-shadow: 0 0 12px rgba(184, 255, 69, 0.4);
+/* Active step */
+.nav-step-active .nav-step-icon {
+  background: var(--a);
+  border-color: var(--a);
+  color: #0a0a0f;
+  box-shadow: 0 0 0 3px rgba(184,255,69,0.15), 0 2px 8px rgba(184,255,69,0.35);
 }
 
-.nav-step.nav-step-active .nav-step-lbl {
-  color: #fff;
+.nav-step-active .nav-step-lbl {
+  color: var(--txt);
   font-weight: 700;
 }
 
-.nav-step.nav-step-done .nav-step-num {
-  background: transparent;
-  border-color: #b8ff45;
-  color: #b8ff45;
+/* Done step */
+.nav-step-done .nav-step-icon {
+  border-color: rgba(184,255,69,0.5);
+  color: var(--a);
+  background: rgba(184,255,69,0.06);
 }
 
-.nav-step.nav-step-done .nav-step-lbl {
-  color: #b8ff45;
+.nav-step-done .nav-step-lbl {
+  color: var(--a);
 }
 
-.nav-step.nav-step-done:hover {
-  background: rgba(184, 255, 69, 0.12);
-}
+/* ── Connector between steps ── */
 
-.nav-step-line {
-  width: 36px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.2);
-  transition: background 0.3s ease;
+.nav-step-connector {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
   flex-shrink: 0;
 }
 
-.nav-step-line-done {
-  background: #b8ff45;
-  box-shadow: 0 0 8px rgba(184, 255, 69, 0.3);
+.nav-step-connector-line {
+  width: 20px;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  transition: background 0.3s ease;
 }
+
+.nav-step-connector-arrow {
+  color: rgba(255,255,255,0.15);
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.nav-step-connector-done .nav-step-connector-line {
+  background: rgba(184,255,69,0.4);
+}
+
+.nav-step-connector-done .nav-step-connector-arrow {
+  color: var(--a);
+}
+
+/* ── Right end actions ── */
 
 .nav-end {
   margin-left: auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .nav-back {
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
   background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--bdr2);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255,255,255,0.6);
   font-weight: 600;
   font-size: 13px;
+  font-family: var(--fui);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
 .nav-back:hover {
-  border-color: #b8ff45;
-  color: #b8ff45;
-  background: rgba(184, 255, 69, 0.1);
-  box-shadow: 0 0 12px rgba(184, 255, 69, 0.2);
+  border-color: rgba(184,255,69,0.4);
+  color: var(--a);
+  background: rgba(184,255,69,0.06);
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .navbar {
-    padding: 0 14px;
-    gap: 12px;
-  }
+.nav-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
-  .nav-brand {
-    min-width: 150px;
-    max-width: 150px;
+/* ── Sign In ── */
+
+.nav-signin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--bdr2);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fui);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  margin-left: 8px;
+  position: relative;
+}
+
+.nav-signin:hover {
+  border-color: rgba(184,255,69,0.35);
+  color: var(--txt);
+  background: rgba(255,255,255,0.04);
+}
+
+.nav-signin-lbl {
+  /* hidden on very small screens */
+}
+
+.nav-signin-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--a);
+  background: rgba(184,255,69,0.1);
+  border: 1px solid rgba(184,255,69,0.2);
+  border-radius: 20px;
+  padding: 2px 6px;
+  font-family: var(--fmono);
+  line-height: 1.4;
+}
+
+/* ── Responsive ── */
+
+/* Compact labels on medium screens */
+@media (max-width: 1100px) {
+  .navbar {
+    padding: 0 16px;
+    gap: 8px;
   }
 
   .nav-event {
     display: none;
   }
 
-  .nav-steps {
-    min-width: 200px;
-    gap: 0;
+  .nav-step {
+    padding: 6px 8px;
   }
 
   .nav-step-lbl {
-    font-size: 10px;
+    font-size: 12px;
   }
 
-  .nav-step-line {
+  .nav-step-connector-line {
     width: 12px;
   }
 }
 
-@media (max-width: 900px) {
-  .navbar {
-    padding: 0 12px;
-    gap: 10px;
+/* Hide labels, show icons only */
+@media (max-width: 860px) {
+  .nav-step-lbl {
+    display: none;
   }
 
-  .nav-brand {
-    min-width: 140px;
+  .nav-step {
+    padding: 6px;
+  }
+
+  .nav-back-lbl {
+    display: none;
+  }
+
+  .nav-back {
+    padding: 7px 10px;
+  }
+
+  .nav-step-connector-line {
+    width: 8px;
+  }
+
+  .nav-signin-lbl {
+    display: none;
+  }
+
+  .nav-signin {
+    padding: 7px 8px;
+    margin-left: 4px;
+  }
+}
+
+/* Hide step list; show counter badge */
+@media (max-width: 640px) {
+  .navbar {
+    height: 56px;
+    padding: 0 14px;
+  }
+
+  .nav-steps-list {
+    display: none;
+  }
+
+  .nav-steps-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(184,255,69,0.06);
+    border: 1px solid rgba(184,255,69,0.15);
+    border-radius: 20px;
   }
 
   .nav-brand-name {
     font-size: 15px;
   }
 
-  .nav-step-lbl {
-    display: none;
-  }
-
-  .nav-step-num {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
-  }
-
-  .nav-steps {
-    min-width: auto;
-  }
-
-  .nav-step-line {
-    width: 8px;
+  .nav-brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 400px) {
   .navbar {
-    height: 60px;
     padding: 0 10px;
-    gap: 8px;
-  }
-
-  .nav-brand-mark {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+    gap: 6px;
   }
 
   .nav-brand-name {
-    font-size: 14px;
-  }
-
-  .nav-brand {
-    min-width: 90px;
-  }
-
-  .nav-steps {
     display: none;
   }
 
-  .nav-back {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-
-  .nav-end {
-    margin-left: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    height: 56px;
-    padding: 0 8px;
-  }
-
-  .nav-brand {
-    min-width: 70px;
-  }
-
-  .nav-brand-mark {
-    width: 28px;
-    height: 28px;
-    font-size: 13px;
-  }
-
-  .nav-brand-name {
-    font-size: 12px;
-    letter-spacing: -0.3px;
-  }
-
-  .nav-back {
-    padding: 5px 10px;
-    font-size: 10px;
+  .nav-signin-badge {
+    display: none;
   }
 }
