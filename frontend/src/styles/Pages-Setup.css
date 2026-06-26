@@ -1,4 +1,4 @@
-/* Page 0: Setup Styles */
+/* Setup Page */
 
 .pg-setup {
   display: flex;
@@ -9,45 +9,51 @@
   padding: 40px 20px;
   background: var(--bg);
   width: 100%;
-  position: relative;
 }
+
+/* ── Hero ── */
 
 .setup-hero {
   text-align: center;
-  max-width: 600px;
+  max-width: 560px;
 }
 
-.setup-hero h1 {
-  font-size: clamp(28px, 5vw, 52px);
+.setup-hero-title {
+  font-family: var(--fui);
+  font-size: clamp(26px, 4vw, 42px);
   font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -1.5px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
   margin-bottom: 12px;
+  color: var(--txt);
 }
 
-.setup-hero h1 em {
+.setup-hero-title em {
   font-style: normal;
-  background: linear-gradient(135deg, #b8ff45, #8fff2e);
+  background: linear-gradient(135deg, #b8ff45, #7de820);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.setup-hero p {
+.setup-hero-sub {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.6;
 }
 
+/* ── Upload grid ── */
+
 .setup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   width: 100%;
   max-width: 900px;
 }
 
-/* Upload cards */
+/* ── Cards ── */
+
 .ucard {
   background: var(--bg2);
   border: 2px dashed var(--bdr2);
@@ -56,62 +62,73 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
   min-height: 200px;
   justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-.ucard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(184, 255, 69, 0),
-    rgba(184, 255, 69, 0.03)
-  );
-  opacity: 0;
-  transition: opacity 0.2s ease;
+/* Static card (event name) — no pointer, no hover lift */
+.ucard-static {
+  cursor: default;
 }
 
-.ucard:hover {
+.ucard:not(.ucard-static):hover {
   border-color: var(--a);
   background: rgba(184, 255, 69, 0.04);
   transform: translateY(-2px);
 }
 
-.ucard:hover::before {
-  opacity: 1;
-}
-
 .ucard-done {
   border-style: solid;
   border-color: var(--a);
-  background: rgba(184, 255, 69, 0.08);
+  background: rgba(184, 255, 69, 0.06);
 }
 
 .ucard-drag {
   border-color: var(--a2);
   background: rgba(69, 232, 255, 0.05);
   border-style: solid;
+  transform: translateY(-2px);
 }
 
-.ucard-plus {
-  font-size: 36px;
+/* ── Card contents ── */
+
+.ucard-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--bdr2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--muted);
-  line-height: 1;
-  opacity: 0.8;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ucard:not(.ucard-static):hover .ucard-icon {
+  color: var(--a);
+  border-color: rgba(184, 255, 69, 0.3);
+}
+
+.ucard-icon-muted {
+  color: var(--muted);
+}
+
+.ucard-done .ucard-icon {
+  color: var(--a);
+  border-color: rgba(184, 255, 69, 0.3);
 }
 
 .ucard-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.3px;
-  z-index: 1;
+  color: var(--txt);
+  letter-spacing: -0.2px;
 }
 
 .ucard-hint {
@@ -119,22 +136,22 @@
   color: var(--muted);
   font-family: var(--fmono);
   text-align: center;
-  line-height: 1.6;
-  z-index: 1;
+  line-height: 1.7;
 }
+
+/* ── Done state ── */
 
 .ucard-thumb {
   width: 100%;
-  max-height: 100px;
-  border-radius: 10px;
+  max-height: 96px;
+  border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--bdr);
-  z-index: 1;
 }
 
 .ucard-thumb img {
   width: 100%;
-  height: 100px;
+  height: 96px;
   object-fit: cover;
   display: block;
 }
@@ -143,18 +160,18 @@
   text-align: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
-  z-index: 1;
 }
 
 .ucard-check {
   color: var(--a);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.ucard-name {
+.ucard-filename {
   font-size: 12px;
   font-family: var(--fmono);
   color: var(--txt);
@@ -174,19 +191,20 @@
   color: var(--a);
 }
 
+/* ── Names preview ── */
+
 .ucard-names-list {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  z-index: 1;
 }
 
 .ucard-name-row {
   font-size: 11px;
   font-family: var(--fmono);
   background: var(--bg3);
-  border-radius: 6px;
+  border-radius: 5px;
   padding: 4px 10px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -202,6 +220,8 @@
   text-align: center;
 }
 
+/* ── Event name input ── */
+
 .event-inp {
   width: 100%;
   background: var(--bg3);
@@ -212,55 +232,57 @@
   font-family: var(--fui);
   font-size: 14px;
   outline: none;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   text-align: center;
-  z-index: 1;
 }
 
 .event-inp:focus {
-  border-color: var(--a);
-  background: rgba(184, 255, 69, 0.04);
-  box-shadow: 0 0 8px rgba(184, 255, 69, 0.15);
+  border-color: rgba(184, 255, 69, 0.5);
+  box-shadow: 0 0 0 3px rgba(184, 255, 69, 0.08);
 }
 
 .event-inp::placeholder {
   color: var(--muted);
 }
 
+/* ── Footer ── */
+
 .setup-foot {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
+}
+
+.setup-continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .setup-req {
   font-size: 12px;
   color: var(--muted);
   font-family: var(--fmono);
-  animation: pulse-text 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse-text {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+/* ── Responsive ── */
+
+@media (max-width: 860px) {
+  .setup-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .pg-setup {
-    gap: 24px;
-    padding: 24px 14px;
+    gap: 28px;
+    padding: 28px 16px;
   }
 
   .setup-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .setup-hero h1 {
-    font-size: clamp(24px, 4vw, 36px);
   }
 
   .ucard {
