@@ -20,9 +20,9 @@
   --a: #b8ff45;
   --a2: #45e8ff;
   --a3: #ff4585;
-  --txt: #dddde8;
-  --muted: #5a5a6e;
-  --muted2: #3a3a4a;
+  --txt: #e2e2ed;
+  --muted: #8888a8;    /* ~5.1:1 contrast on --bg — WCAG AA compliant */
+  --muted2: #4a4a62;
   --r: 8px;
   --r2: 12px;
   --r3: 16px;
@@ -39,9 +39,15 @@ body,
   font-family: var(--fui);
   font-size: 14px;
   line-height: 1.5;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Isolate horizontal overflow clipping to the layout shell only.
+   Setting overflow-x on html/body creates an implicit BFC that can
+   inadvertently clip font descenders (e.g. Syne's 'g'). */
+.layout {
+  overflow-x: hidden;
 }
 
 /* Noise texture */
@@ -193,7 +199,7 @@ body,
 
 .cta.cta-ghost:hover {
   border-color: var(--a);
-  color: #dddde8;
+  color: var(--txt);
   background: rgba(184, 255, 69, 0.05);
 }
 

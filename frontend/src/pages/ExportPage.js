@@ -9,7 +9,7 @@ export default function ExportPage() {
 
   const handleNewProject = () => {
     // optional reset state?
-    navigate('/');
+    navigate('/setup');
   };
 
   return (
