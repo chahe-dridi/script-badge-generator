@@ -5,6 +5,8 @@ import "./styles/Layout.css";
 
 import Layout from "./components/Layout";
 import Toast from "./components/Toast";
+import ScrollToTop from "./components/ScrollToTop";
+import WhatsNew from "./components/WhatsNew";
 
 import LandingPage    from "./pages/LandingPage";
 import SetupPage      from "./pages/SetupPage";
@@ -20,7 +22,9 @@ export default function App() {
   return (
     <>
       <div className="noise" />
+      <ScrollToTop />
       <Toast />
+      <WhatsNew />
       <Layout>
         <Routes>
           {/* Core app flow */}
