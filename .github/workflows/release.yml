@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog note for this version
+        id: notes
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          # Pull the note field that follows the matching version string
+          NOTE=$(node -e "
+            const src = require('fs').readFileSync('frontend/src/version.js', 'utf8');
+            const match = src.match(new RegExp('version:\\\\s*\"' + process.argv[1] + '\",[\\\\s\\\\S]*?note:\\\\s*\"([^\"]+)\"'));
+            console.log(match ? match[1] : 'Release $TAG');
+          " "$TAG")
+          {
+            echo "body<<__BODY__"
+            echo "## v${TAG}"
+            echo ""
+            echo "${NOTE}"
+            echo "__BODY__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.body }}
+          make_latest: true
