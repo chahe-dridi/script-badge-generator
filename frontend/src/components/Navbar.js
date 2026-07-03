@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useBadgeContext } from "../context/BadgeContext";
+import { useAuth } from "../context/AuthContext";
 import {
   IconBadge, IconUpload, IconPalette, IconGrid,
   IconDownload, IconCheck, IconArrowLeft, IconArrowRight,
@@ -19,8 +20,14 @@ const APP_PATHS = new Set(["/setup", "/design", "/gallery", "/export"]);
 
 export default function Navbar() {
   const { cfg } = useBadgeContext();
+  const { user, loading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    logout();
+    navigate("/");
+  };
 
   const isLanding   = location.pathname === "/";
   const isAppFlow   = APP_PATHS.has(location.pathname);
@@ -116,12 +123,28 @@ export default function Navbar() {
           </button>
         )}
 
-        {/* Sign In — visible on all pages */}
-        <Link to="/login" className="nav-signin" title="Sign in (coming soon)">
-          <IconUserCircle size={17} />
-          <span className="nav-signin-lbl">Sign In</span>
-          <span className="nav-signin-badge">Soon</span>
-        </Link>
+        {/* Account — reflects auth state (hidden until the session resolves) */}
+        {!loading && (
+          user ? (
+            <div className="nav-account">
+              <span className="nav-account-chip" title={user.email}>
+                <IconUserCircle size={17} />
+                <span className="nav-account-name">
+                  {user.full_name || user.email.split("@")[0]}
+                </span>
+                <span className="nav-account-plan">{user.plan}</span>
+              </span>
+              <button className="nav-signout" onClick={handleSignOut} title="Sign out">
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="nav-signin" title="Sign in">
+              <IconUserCircle size={17} />
+              <span className="nav-signin-lbl">Sign In</span>
+            </Link>
+          )
+        )}
       </div>
 
     </nav>

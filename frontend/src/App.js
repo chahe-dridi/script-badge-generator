@@ -16,8 +16,9 @@ import ExportPage     from "./pages/ExportPage";
 import AboutPage      from "./pages/AboutPage";
 import TermsPage      from "./pages/TermsPage";
 import PrivacyPage    from "./pages/PrivacyPage";
-import ComingSoonPage from "./pages/ComingSoonPage";
 import ChangelogPage  from "./pages/ChangelogPage";
+import LoginPage      from "./pages/LoginPage";
+import RegisterPage   from "./pages/RegisterPage";
 
 export default function App() {
   return (
@@ -35,9 +36,9 @@ export default function App() {
           <Route path="/gallery" element={<GalleryPage />}    />
           <Route path="/export"  element={<ExportPage />}     />
 
-          {/* Auth stubs — Coming Soon */}
-          <Route path="/login"    element={<ComingSoonPage />} />
-          <Route path="/register" element={<ComingSoonPage />} />
+          {/* Auth */}
+          <Route path="/login"    element={<LoginPage />}    />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Company / Legal */}
           <Route path="/about"     element={<AboutPage />}     />

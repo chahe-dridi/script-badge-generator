@@ -15,7 +15,7 @@ export const CHANGELOG = [
   {
     version: "2.0.0",
     date: "2026-07-03",
-    note: "Foundation for accounts & plans (JWT auth backend with Free/Pro/Team tiers), new Inter + Space Grotesk type system, design preset JSON export/import, preview against real names, smoother navigation, and accessibility fixes (keyboard focus, reduced-motion)",
+    note: "Accounts are here — sign up & sign in (JWT) with Free/Pro/Team plan tiers, new Inter + Space Grotesk type system, design preset JSON export/import, preview against real names, a release-notes page, smoother navigation, and accessibility fixes (keyboard focus, reduced-motion)",
   },
   {
     version: "1.2.0",
