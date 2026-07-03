@@ -47,13 +47,12 @@
 }
 
 .footer-brand-name {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 1;
-  padding-bottom: 3px;
   color: var(--txt);
-  font-family: var(--fui);
+  font-family: var(--fdisp);
 }
 
 .footer-brand-desc {

@@ -1,6 +1,7 @@
 /* Global Base Styles */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+/* Fonts are loaded via <link rel="preconnect"> + stylesheet in public/index.html
+   (A12) — faster than a render-blocking CSS @import. */
 
 *,
 *::before,
@@ -28,7 +29,8 @@
   --r: 8px;
   --r2: 12px;
   --r3: 16px;
-  --fui: 'Syne', sans-serif;
+  --fui: 'Inter', system-ui, -apple-system, sans-serif;   /* body / UI — readable at small sizes */
+  --fdisp: 'Space Grotesk', 'Inter', sans-serif;          /* headings / display — not extended like Syne (A11) */
   --fmono: 'DM Mono', monospace;
   --focus: rgba(184, 255, 69, 0.6);   /* keyboard focus ring color */
 }

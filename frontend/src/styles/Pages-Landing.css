@@ -27,7 +27,7 @@
 }
 
 .section-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: 36px;
   font-weight: 800;
   color: var(--txt);
@@ -85,7 +85,7 @@
    with a conflicting body that collided with Footer.css). */
 
 .hero-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: 54px;
   font-weight: 800;
   line-height: 1.08;
@@ -262,7 +262,7 @@
   letter-spacing: 0.08em;
   text-align: center;
   margin-bottom: 6px;
-  font-family: var(--fui);
+  font-family: var(--fdisp);
 }
 
 .badge-card-role {
@@ -384,7 +384,7 @@
 }
 
 .how-step-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: 16px;
   font-weight: 700;
   color: var(--txt);
@@ -469,7 +469,7 @@
 .feat-accent-a2 .feat-icon-wrap { background: rgba(69,232,255,0.08); color: var(--a2); border: 1px solid rgba(69,232,255,0.2); }
 
 .feat-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: 15px;
   font-weight: 700;
   color: var(--txt);
@@ -500,7 +500,7 @@
 }
 
 .cta-banner-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: 32px;
   font-weight: 800;
   color: var(--txt);
