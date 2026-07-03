@@ -9,9 +9,14 @@
  * Update VERSION and add an entry to CHANGELOG on every meaningful release.
  */
 
-export const VERSION = "1.2.0";
+export const VERSION = "2.0.0";
 
 export const CHANGELOG = [
+  {
+    version: "2.0.0",
+    date: "2026-07-03",
+    note: "Foundation for accounts & plans (JWT auth backend with Free/Pro/Team tiers), new Inter + Space Grotesk type system, design preset JSON export/import, preview against real names, smoother navigation, and accessibility fixes (keyboard focus, reduced-motion)",
+  },
   {
     version: "1.2.0",
     date: "2026-06-26",
