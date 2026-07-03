@@ -51,13 +51,21 @@ export default function DesignPage() {
     templateImg, templateFile,
     names, namesFile,
     gallery, buildGallery, downloadZip,
-    savedDesigns, loadDesign, saveDesign, removeDesign
+    savedDesigns, loadDesign, saveDesign, removeDesign, exportDesigns, importDesigns
   } = useBadgeContext();
 
   const [designTab, setDT] = React.useState('text');
   const [newDesignName, setNDN] = React.useState('');
-  
+
   const previewCanvasRef = useRef();
+  const importInputRef = useRef();
+
+  // F2 — cycle the live preview through the actually-uploaded names
+  const shufflePreviewName = () => {
+    if (names.length === 0) return;
+    const pick = names[Math.floor(Math.random() * names.length)];
+    setPN(pick);
+  };
 
   // Instant preview
   useEffect(() => {
@@ -203,7 +211,40 @@ export default function DesignPage() {
                 </div>
               </div>
               <div className='fx-div' />
-              <label className='dlbl'>SAVED DESIGNS</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className='dlbl' style={{ margin: 0 }}>SAVED DESIGNS</label>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    className='ghost'
+                    style={{ padding: '4px 8px', fontSize: '11px' }}
+                    onClick={exportDesigns}
+                    disabled={savedDesigns.length === 0}
+                    title='Export all saved designs to a JSON file'
+                  >
+                    ⬆ Export
+                  </button>
+                  <button
+                    className='ghost'
+                    style={{ padding: '4px 8px', fontSize: '11px' }}
+                    onClick={() => importInputRef.current?.click()}
+                    title='Import designs from a JSON file'
+                  >
+                    ⬇ Import
+                  </button>
+                  <input
+                    ref={importInputRef}
+                    type='file'
+                    accept='application/json,.json'
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) importDesigns(f);
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+              </div>
+              <div style={{ height: '8px' }} />
               {savedDesigns.length === 0 ? (
                 <div className='dinfo'>No saved designs yet.</div>
               ) : (
@@ -226,7 +267,19 @@ export default function DesignPage() {
         <div className='design-footer'>
           <div className='pname-box'>
             <label className='dlbl'>PREVIEW NAME</label>
-            <input className='pname-inp' aria-label='Preview name' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input className='pname-inp' style={{ flex: 1 }} aria-label='Preview name' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
+              {names.length > 0 && (
+                <button
+                  className='ghost'
+                  style={{ flexShrink: 0, padding: '0 12px' }}
+                  onClick={shufflePreviewName}
+                  title='Preview a real name from your uploaded list'
+                >
+                  🎲
+                </button>
+              )}
+            </div>
           </div>
           <div className='design-ctas'>
             {gallery.length > 0 && (

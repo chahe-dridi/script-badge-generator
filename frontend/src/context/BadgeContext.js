@@ -88,6 +88,54 @@ export function BadgeProvider({ children }) {
     notify("Design removed", "info");
   }, [notify]);
 
+  // F1 — export all saved designs to a portable JSON file (backup / share)
+  const exportDesigns = useCallback(() => {
+    if (savedDesigns.length === 0) return notify("No saved designs to export", "error");
+    const payload = {
+      type: "badgegen-designs",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      designs: savedDesigns,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `badgegen-designs-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const n = savedDesigns.length;
+    notify(`Exported ${n} design${n > 1 ? "s" : ""}`, "success");
+  }, [savedDesigns, notify]);
+
+  // F1 — import designs from a JSON file (accepts our export shape or a bare array)
+  const importDesigns = useCallback(async (file) => {
+    try {
+      const data = JSON.parse(await file.text());
+      const incoming = Array.isArray(data) ? data : data.designs;
+      if (!Array.isArray(incoming)) throw new Error("unrecognized file format");
+      // Only keep objects that actually look like a badge design
+      const valid = incoming.filter((d) => d && typeof d === "object" && "font_size" in d);
+      if (valid.length === 0) throw new Error("no valid designs found");
+      setSavedDesigns((prev) => {
+        const ids = new Set(prev.map((d) => d.id));
+        const merged = [...prev];
+        for (const d of valid) {
+          let id = d.id;
+          if (id === undefined || ids.has(id)) id = Date.now() + Math.floor(Math.random() * 1e5);
+          ids.add(id);
+          merged.push({ ...d, id, designName: d.designName || "Imported design" });
+        }
+        return merged;
+      });
+      notify(`Imported ${valid.length} design${valid.length > 1 ? "s" : ""}`, "success");
+    } catch (e) {
+      notify("Import failed: " + e.message, "error");
+    }
+  }, [notify]);
+
   // Gallery actions
   const buildGallery = useCallback(async () => {
     if (!templateImg) return notify("Upload a template first", "error");
@@ -301,7 +349,7 @@ export function BadgeProvider({ children }) {
     galProgress, setGP,
     zipLoading, zipProgress, zipDone,
     toast, notify,
-    savedDesigns, loadDesign, saveDesign, removeDesign,
+    savedDesigns, loadDesign, saveDesign, removeDesign, exportDesigns, importDesigns,
     buildGallery, regenOne, removeBadge, removeGalleryItem: removeBadge, regenAll, downloadZip, resetAll, INIT_CFG
   };
 
