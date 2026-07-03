@@ -145,6 +145,7 @@ export default function SetupPage() {
           <div className="ucard-title">Event Name</div>
           <input
             className="event-inp"
+            aria-label="Event name"
             placeholder="e.g. Tech Summit 2025"
             value={cfg.event_name}
             onChange={(e) => updateCfg("event_name", e.target.value)}

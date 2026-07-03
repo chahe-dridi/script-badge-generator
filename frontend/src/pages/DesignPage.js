@@ -198,7 +198,7 @@ export default function DesignPage() {
               <div className='dfield'>
                 <label className='dlbl'>SAVE CURRENT DESIGN</label>
                 <div className='flex-row-gap' style={{display:'flex', gap: '8px'}}>
-                  <input className='pname-inp' style={{flex: 1}} value={newDesignName} onChange={e => setNDN(e.target.value)} placeholder='e.g. Dark Theme...' />
+                  <input className='pname-inp' style={{flex: 1}} aria-label='New design name' value={newDesignName} onChange={e => setNDN(e.target.value)} placeholder='e.g. Dark Theme...' />
                   <button className='cta cta-ghost cta-sm' disabled={!newDesignName.trim()} onClick={() => { saveDesign(newDesignName); setNDN(''); }}>Save</button>
                 </div>
               </div>
@@ -226,7 +226,7 @@ export default function DesignPage() {
         <div className='design-footer'>
           <div className='pname-box'>
             <label className='dlbl'>PREVIEW NAME</label>
-            <input className='pname-inp' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
+            <input className='pname-inp' aria-label='Preview name' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
           </div>
           <div className='design-ctas'>
             {gallery.length > 0 && (

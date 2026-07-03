@@ -81,10 +81,8 @@
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.75); }
-}
+/* pulse-dot keyframes live in Global.css (A6 — was duplicated here
+   with a conflicting body that collided with Footer.css). */
 
 .hero-title {
   font-family: var(--fui);
@@ -522,12 +520,8 @@
   gap: 8px;
 }
 
-/* ── Animations ── */
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* fadeUp keyframes live in Global.css (A6 — was duplicated here and in
+   Pages-Legal.css with differing travel distances). */
 
 /* ── Responsive ── */
 

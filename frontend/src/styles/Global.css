@@ -18,6 +18,8 @@
   --bdr: #252530;
   --bdr2: #2e2e3c;
   --a: #b8ff45;
+  --a-d: #7de820;      /* accent, darker — gradient partner for --a */
+  --a-h: #caff5a;      /* accent, hover/lighter */
   --a2: #45e8ff;
   --a3: #ff4585;
   --txt: #e2e2ed;
@@ -28,6 +30,42 @@
   --r3: 16px;
   --fui: 'Syne', sans-serif;
   --fmono: 'DM Mono', monospace;
+  --focus: rgba(184, 255, 69, 0.6);   /* keyboard focus ring color */
+}
+
+/* Accessible keyboard focus ring (A1 — WCAG 2.4.7).
+   Targets keyboard/programmatic focus only, so it never fights the
+   existing hover/active visuals on mouse click. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect the user's reduced-motion preference (A2 — WCAG 2.3.3).
+   Collapse infinite loops and long transitions while preserving
+   state changes and instant scroll positioning. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Canonical shared animations — single source of truth (A6).
+   Page/component stylesheets must NOT redeclare these names. */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.5;  transform: scale(0.75); }
 }
 
 html,
@@ -50,12 +88,13 @@ body,
   overflow-x: hidden;
 }
 
-/* Noise texture */
+/* Noise texture — single source of truth (A7). Sits above the page
+   background but below the sticky navbar (z-index 200). */
 .noise {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   background-size: 200px;
   opacity: 0.025;

@@ -329,12 +329,7 @@
 
 .coming-soon-back:hover { color: var(--txt); }
 
-/* ── Animation ── */
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* fadeUp keyframes live in Global.css (A6 — was duplicated here). */
 
 /* ── Responsive ── */
 

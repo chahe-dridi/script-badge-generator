@@ -182,7 +182,7 @@ export default function GalleryPage() {
 
             <div className='gside-prev'>
               {selectedBadge.dataUrl ? (
-                <img src={selectedBadge.dataUrl} alt='sel' />
+                <img src={selectedBadge.dataUrl} alt={`Badge preview for ${selectedBadge.name}`} />
               ) : (
                 <div className='gside-noimg'>No preview</div>
               )}

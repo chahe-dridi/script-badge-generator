@@ -159,10 +159,7 @@
   flex-shrink: 0;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.45; }
-}
+/* pulse-dot keyframes live in Global.css (A6 — was duplicated here). */
 
 .footer-status-label {
   font-size: 12px;
