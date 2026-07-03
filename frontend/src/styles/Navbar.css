@@ -49,13 +49,12 @@
 }
 
 .nav-brand-name {
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0;          /* Syne 800 is naturally tight — don't compress further */
-  line-height: 1;             /* Collapse extra line-box space; descenders handled by padding */
-  padding-bottom: 3px;        /* Room for Syne's 'g' / 'y' / 'p' descenders */
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
   color: var(--txt);
-  font-family: var(--fui);
+  font-family: var(--fdisp);
 }
 
 .nav-event {

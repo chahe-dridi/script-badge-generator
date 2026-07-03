@@ -19,7 +19,7 @@
 }
 
 .setup-hero-title {
-  font-family: var(--fui);
+  font-family: var(--fdisp);
   font-size: clamp(26px, 4vw, 42px);
   font-weight: 800;
   line-height: 1.15;
