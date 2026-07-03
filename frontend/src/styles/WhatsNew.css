@@ -56,6 +56,23 @@
   overflow: hidden;
 }
 
+.wn-link {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--a);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border: 1px solid rgba(184, 255, 69, 0.25);
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.wn-link:hover {
+  background: rgba(184, 255, 69, 0.1);
+}
+
 .wn-dismiss {
   flex-shrink: 0;
   background: none;

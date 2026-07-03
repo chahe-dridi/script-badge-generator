@@ -195,6 +195,13 @@
   border: 1px solid rgba(184,255,69,0.18);
   border-radius: 20px;
   padding: 3px 10px;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.footer-version:hover {
+  background: rgba(184,255,69,0.13);
+  border-color: rgba(184,255,69,0.35);
 }
 
 /* ── Responsive ── */

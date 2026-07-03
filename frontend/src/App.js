@@ -17,6 +17,7 @@ import AboutPage      from "./pages/AboutPage";
 import TermsPage      from "./pages/TermsPage";
 import PrivacyPage    from "./pages/PrivacyPage";
 import ComingSoonPage from "./pages/ComingSoonPage";
+import ChangelogPage  from "./pages/ChangelogPage";
 
 export default function App() {
   return (
@@ -39,9 +40,10 @@ export default function App() {
           <Route path="/register" element={<ComingSoonPage />} />
 
           {/* Company / Legal */}
-          <Route path="/about"   element={<AboutPage />}      />
-          <Route path="/terms"   element={<TermsPage />}      />
-          <Route path="/privacy" element={<PrivacyPage />}    />
+          <Route path="/about"     element={<AboutPage />}     />
+          <Route path="/terms"     element={<TermsPage />}     />
+          <Route path="/privacy"   element={<PrivacyPage />}   />
+          <Route path="/changelog" element={<ChangelogPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

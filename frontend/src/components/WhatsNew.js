@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { VERSION, CHANGELOG } from "../version";
 import "../styles/WhatsNew.css";
 
@@ -26,6 +27,9 @@ export default function WhatsNew() {
       <div className="wn-inner">
         <span className="wn-badge">✦ New in v{latest.version}</span>
         <p className="wn-note">{latest.note}</p>
+        <Link to="/changelog" className="wn-link" onClick={dismiss}>
+          See all
+        </Link>
         <button className="wn-dismiss" onClick={dismiss} aria-label="Dismiss">
           ✕
         </button>
