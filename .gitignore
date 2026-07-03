@@ -1,6 +1,11 @@
 # Python
 __pycache__/
 *.pyc
+# Backend local DB + secrets
+backend/*.db
+backend/_test_*.db
+backend/.env
+.pytest_cache/
 *.pyo
 *.pyd
 .Python

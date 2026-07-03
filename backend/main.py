@@ -4,6 +4,8 @@ Badge Generator - FastAPI Backend
 Handles badge generation with full Arabic/RTL support
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -27,16 +29,37 @@ except ImportError:
     ARABIC_SUPPORT = False
     print("Arabic reshaper not available. Install: pip install arabic-reshaper python-bidi")
 
-app = FastAPI(title="Badge Generator API", version="2.0.0")
+from app.config import get_settings
+from app.db import init_db
+from app.routers import auth as auth_router
+from app.routers import plans as plans_router
+from app.routers import projects as projects_router
 
-# CORS - allow frontend to call backend
+settings = get_settings()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Badge Generator API", version="2.0.0", lifespan=lifespan)
+
+# CORS - restricted to configured frontend origins (required now that
+# authenticated requests carry credentials). Set CORS_ORIGINS in .env.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update this to your Vercel URL in production
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Auth / users / plans / projects
+app.include_router(auth_router.router)
+app.include_router(plans_router.router)
+app.include_router(projects_router.router)
 
 # ─── Font helpers ────────────────────────────────────────────────────────────
 
