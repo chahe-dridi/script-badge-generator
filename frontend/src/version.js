@@ -9,9 +9,14 @@
  * Update VERSION and add an entry to CHANGELOG on every meaningful release.
  */
 
-export const VERSION = "2.0.0";
+export const VERSION = "2.1.0";
 
 export const CHANGELOG = [
+  {
+    version: "2.1.0",
+    date: "2026-07-04",
+    note: "Admin dashboard — user management, plan pricing editor, role-based access; landing page pricing section; plan configs now stored in DB (admin-configurable)",
+  },
   {
     version: "2.0.0",
     date: "2026-07-03",
