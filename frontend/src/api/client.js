@@ -71,4 +71,17 @@ export const api = {
   me: () => request("/api/auth/me", { auth: true }),
   plans: () => request("/api/plans"),
   myPlan: () => request("/api/plans/me", { auth: true }),
+
+  // Admin
+  adminStats: () => request("/api/admin/stats", { auth: true }),
+  adminUsers: (q) => {
+    const qs = q ? `?q=${encodeURIComponent(q)}` : "";
+    return request(`/api/admin/users${qs}`, { auth: true });
+  },
+  adminUser: (id) => request(`/api/admin/users/${id}`, { auth: true }),
+  adminUpdateUser: (id, data) =>
+    request(`/api/admin/users/${id}`, { method: "PATCH", json: data, auth: true }),
+  adminPlans: () => request("/api/admin/plans", { auth: true }),
+  adminUpdatePlan: (tier, data) =>
+    request(`/api/admin/plans/${tier}`, { method: "PUT", json: data, auth: true }),
 };
