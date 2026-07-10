@@ -127,6 +127,14 @@ export default function Navbar() {
         {!loading && (
           user ? (
             <div className="nav-account">
+              {user.is_admin && (
+                <Link to="/admin" className="nav-admin-chip" title="Admin dashboard">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7l-9-5z"/>
+                  </svg>
+                  Admin
+                </Link>
+              )}
               <span className="nav-account-chip" title={user.email}>
                 <IconUserCircle size={17} />
                 <span className="nav-account-name">

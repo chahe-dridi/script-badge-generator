@@ -266,6 +266,31 @@
   background: rgba(255,255,255,0.04);
 }
 
+/* ── Admin chip ── */
+
+.nav-admin-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: #18181f;
+  border: 1px solid rgba(245,197,24,0.35);
+  border-radius: 8px;
+  color: #f5c518;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--fmono);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nav-admin-chip:hover {
+  background: #221d00;
+  border-color: rgba(245,197,24,0.6);
+}
+
 /* ── Account (signed in) ── */
 
 .nav-account {
