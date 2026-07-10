@@ -31,6 +31,7 @@ except ImportError:
 
 from app.config import get_settings
 from app.db import init_db
+from app.routers import admin as admin_router
 from app.routers import auth as auth_router
 from app.routers import plans as plans_router
 from app.routers import projects as projects_router
@@ -56,10 +57,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Auth / users / plans / projects
+# Auth / users / plans / projects / admin
 app.include_router(auth_router.router)
 app.include_router(plans_router.router)
 app.include_router(projects_router.router)
+app.include_router(admin_router.router)
 
 # ─── Font helpers ────────────────────────────────────────────────────────────
 

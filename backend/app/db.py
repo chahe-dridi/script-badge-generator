@@ -15,15 +15,38 @@ engine = create_engine(settings.database_url, echo=False, connect_args=_connect_
 
 
 def init_db() -> None:
-    """Create tables from SQLModel metadata.
+    """Create tables and seed plan configs.
 
     NOTE: create_all is fine for a greenfield first pass. Before the first
     production schema change, switch to Alembic migrations (see BACKEND-PLAN.md).
     """
-    # Import models so they register on SQLModel.metadata before create_all.
     from . import models  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
+    _seed_plan_configs()
+
+
+def _seed_plan_configs() -> None:
+    """Insert default PlanConfig rows if they don't exist yet (idempotent)."""
+    from sqlmodel import select
+    from .models import PlanConfig, PLAN_LIMITS
+
+    with Session(engine) as session:
+        for tier, limits in PLAN_LIMITS.items():
+            exists = session.exec(
+                select(PlanConfig).where(PlanConfig.tier == tier)
+            ).first()
+            if not exists:
+                session.add(PlanConfig(
+                    tier=tier,
+                    label=limits["label"],
+                    price_usd=float(limits["price_usd"]),
+                    max_projects=limits["max_projects"],
+                    max_batch=limits["max_batch"],
+                    watermark=limits["watermark"],
+                    pdf_export=limits["pdf_export"],
+                ))
+        session.commit()
 
 
 def get_session():

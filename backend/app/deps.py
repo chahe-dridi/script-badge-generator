@@ -32,3 +32,13 @@ def get_current_user(
     if user is None or not user.is_active:
         raise cred_exc
     return user
+
+
+def get_current_admin(current: User = Depends(get_current_user)) -> User:
+    """Require the caller to be an active admin (403 if not)."""
+    if not current.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required",
+        )
+    return current

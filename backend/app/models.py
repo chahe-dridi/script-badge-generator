@@ -50,7 +50,22 @@ class User(SQLModel, table=True):
     full_name: Optional[str] = None
     plan: PlanTier = Field(default=PlanTier.FREE)
     is_active: bool = Field(default=True)
+    is_admin: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class PlanConfig(SQLModel, table=True):
+    """Admin-configurable plan pricing and limits, seeded from PLAN_LIMITS."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tier: PlanTier = Field(index=True, unique=True)
+    label: str
+    price_usd: float = Field(default=0.0)
+    max_projects: Optional[int] = None
+    max_batch: Optional[int] = None
+    watermark: bool = Field(default=True)
+    pdf_export: bool = Field(default=False)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Project(SQLModel, table=True):

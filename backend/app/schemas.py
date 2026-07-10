@@ -46,3 +46,49 @@ class ProjectRead(BaseModel):
     config: dict
     created_at: datetime
     updated_at: datetime
+
+
+# ── Admin ──
+
+class UserAdminRead(BaseModel):
+    id: int
+    email: EmailStr
+    full_name: Optional[str] = None
+    plan: PlanTier
+    is_active: bool
+    is_admin: bool
+    created_at: datetime
+
+
+class UserAdminUpdate(BaseModel):
+    plan: Optional[PlanTier] = None
+    is_active: Optional[bool] = None
+    is_admin: Optional[bool] = None
+
+
+class PlanConfigRead(BaseModel):
+    tier: PlanTier
+    label: str
+    price_usd: float
+    max_projects: Optional[int] = None
+    max_batch: Optional[int] = None
+    watermark: bool
+    pdf_export: bool
+    updated_at: datetime
+
+
+class PlanConfigUpdate(BaseModel):
+    label: Optional[str] = None
+    price_usd: Optional[float] = None
+    max_projects: Optional[int] = None
+    max_batch: Optional[int] = None
+    watermark: Optional[bool] = None
+    pdf_export: Optional[bool] = None
+
+
+class AdminStats(BaseModel):
+    total_users: int
+    active_users: int
+    inactive_users: int
+    recent_signups_7d: int
+    by_plan: dict
