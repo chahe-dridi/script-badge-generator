@@ -149,6 +149,16 @@ def contains_arabic(text: str) -> bool:
     return False
 
 
+def apply_text_transform(text: str, transform: str) -> str:
+    if transform == "uppercase":
+        return text.upper()
+    if transform == "lowercase":
+        return text.lower()
+    if transform == "titlecase":
+        return text.title()
+    return text
+
+
 def process_text(text: str, arabic_support: bool = True) -> str:
     if not text:
         return text
@@ -171,6 +181,26 @@ def get_text_size(draw, text, font):
         except:
             size = getattr(font, 'size', 20)
             return len(text) * int(size * 0.6), size
+
+
+def wrap_text_pil(draw, text: str, font, max_width: int) -> list:
+    """Split text into lines that each fit within max_width pixels."""
+    if not max_width or max_width <= 0:
+        return [text]
+    words = text.split()
+    if not words:
+        return [text]
+    lines, current = [], words[0]
+    for word in words[1:]:
+        test = current + " " + word
+        w, _ = get_text_size(draw, test, font)
+        if w > max_width:
+            lines.append(current)
+            current = word
+        else:
+            current = test
+    lines.append(current)
+    return lines or [text]
 
 
 # ─── Badge drawing ────────────────────────────────────────────────────────────
@@ -198,9 +228,20 @@ def draw_badge(
     text_strikethrough: bool,
     text_rotation: int,
     arabic_support: bool,
+    # v2.2 params (all optional with safe defaults)
+    text_transform: str = "none",
+    letter_spacing: int = 0,
+    text_bg: bool = False,
+    text_bg_color: str = "#000000",
+    text_bg_opacity: float = 0.5,
+    text_bg_padding: int = 8,
+    text_wrap: bool = False,
+    text_wrap_width: int = 0,
 ) -> Image.Image:
 
-    display_text = process_text(text, arabic_support)
+    # Apply text transform first, then Arabic reshaping
+    transformed = apply_text_transform(text, text_transform)
+    display_text = process_text(transformed, arabic_support)
 
     img = template.copy()
     if img.mode != 'RGBA':
@@ -208,7 +249,7 @@ def draw_badge(
 
     font = get_font(font_family, font_size, font_style, font_weight)
 
-    # Use a padding canvas to avoid clipping
+    # Use a padding canvas to avoid clipping rotated text
     pad = max(200, font_size * 3)
     canvas_w = img.width + pad * 2
     canvas_h = img.height + pad * 2
@@ -216,61 +257,105 @@ def draw_badge(
     canvas.paste(img, (pad, pad))
 
     draw = ImageDraw.Draw(canvas)
-    tw, th = get_text_size(draw, display_text, font)
 
-    # Alignment offset
+    # Wrap text into lines
+    effective_wrap_width = text_wrap_width if text_wrap_width > 0 else img.width
+    lines = wrap_text_pil(draw, display_text, font, effective_wrap_width) if text_wrap else [display_text]
+    line_sizes = [get_text_size(draw, line, font) for line in lines]
+    line_h = int(font_size * 1.25)
+    total_w = max(lw for lw, _ in line_sizes) if line_sizes else 0
+    total_h = line_h * len(lines)
+
+    # Alignment offset (based on total block width)
     if text_align == "center":
-        ax = -tw // 2
+        block_ax = -total_w // 2
     elif text_align == "right":
-        ax = -tw
+        block_ax = -total_w
     else:
-        ax = 0
+        block_ax = 0
 
-    tx = x + pad + ax
-    ty = y + pad
+    block_tx = x + pad + block_ax
+    block_ty = y + pad
 
-    def draw_text_on(d, fx, fy, color):
+    # ── Text background box ──
+    if text_bg:
         try:
-            d.text((fx, fy), display_text, font=font, fill=color)
-        except Exception as e:
-            print(f"Text draw error: {e}")
-            d.text((fx, fy), display_text, font=font, fill="black")
+            r = int(text_bg_color[1:3], 16)
+            g = int(text_bg_color[3:5], 16)
+            b_val = int(text_bg_color[5:7], 16)
+        except (ValueError, IndexError):
+            r, g, b_val = 0, 0, 0
+        a = int(max(0.0, min(1.0, text_bg_opacity)) * 255)
+        bg_layer = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
+        bg_draw = ImageDraw.Draw(bg_layer)
+        bg_draw.rectangle(
+            [block_tx - text_bg_padding, block_ty - text_bg_padding,
+             block_tx + total_w + text_bg_padding, block_ty + total_h + text_bg_padding],
+            fill=(r, g, b_val, a)
+        )
+        canvas = Image.alpha_composite(canvas, bg_layer)
+        draw = ImageDraw.Draw(canvas)
 
-    # ── Shadow ──
-    if text_shadow:
-        if text_blur := shadow_blur:
-            shadow_layer = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
-            sd = ImageDraw.Draw(shadow_layer)
-            draw_text_on(sd, tx + shadow_offset_x, ty + shadow_offset_y, shadow_color)
-            shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(text_blur))
-            canvas = Image.alpha_composite(canvas, shadow_layer)
-            draw = ImageDraw.Draw(canvas)
+    def draw_single_line(d, line: str, lw_px: int, lh_px: int, lx: int, ly: int, color: str):
+        if letter_spacing > 0:
+            cx = lx
+            for char in line:
+                try:
+                    d.text((cx, ly), char, font=font, fill=color)
+                except Exception:
+                    d.text((cx, ly), char, font=font, fill="black")
+                cw, _ = get_text_size(d, char, font)
+                cx += cw + letter_spacing
         else:
-            draw_text_on(draw, tx + shadow_offset_x, ty + shadow_offset_y, shadow_color)
+            try:
+                d.text((lx, ly), line, font=font, fill=color)
+            except Exception:
+                d.text((lx, ly), line, font=font, fill="black")
 
-    # ── Outline ──
-    if text_outline:
-        for dx in range(-outline_width, outline_width + 1):
-            for dy in range(-outline_width, outline_width + 1):
-                if dx != 0 or dy != 0:
-                    draw_text_on(draw, tx + dx, ty + dy, outline_color)
+        dec_lw = max(1, font_size // 20)
+        if text_underline:
+            d.rectangle([lx, ly + lh_px + dec_lw, lx + lw_px, ly + lh_px + dec_lw * 2], fill=color)
+        if text_strikethrough:
+            sy = ly + lh_px // 2
+            d.rectangle([lx, sy, lx + lw_px, sy + dec_lw], fill=color)
 
-    # ── Main text ──
-    draw_text_on(draw, tx, ty, font_color)
+    # ── Draw each line ──
+    for i, (line, (lw_px, lh_px)) in enumerate(zip(lines, line_sizes)):
+        # Per-line alignment (uses each line's own width for pixel-perfect align)
+        if text_align == "center":
+            lx = x + pad - lw_px // 2
+        elif text_align == "right":
+            lx = x + pad - lw_px
+        else:
+            lx = x + pad
+        ly = y + pad + i * line_h
 
-    # ── Decorations ──
-    lw = max(1, font_size // 20)
-    if text_underline:
-        draw.rectangle([tx, ty + th + lw, tx + tw, ty + th + lw * 2], fill=font_color)
-    if text_strikethrough:
-        sy = ty + th // 2
-        draw.rectangle([tx, sy, tx + tw, sy + lw], fill=font_color)
+        # ── Shadow ──
+        if text_shadow:
+            if shadow_blur:
+                shadow_layer = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
+                sd = ImageDraw.Draw(shadow_layer)
+                draw_single_line(sd, line, lw_px, lh_px, lx + shadow_offset_x, ly + shadow_offset_y, shadow_color)
+                shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(shadow_blur))
+                canvas = Image.alpha_composite(canvas, shadow_layer)
+                draw = ImageDraw.Draw(canvas)
+            else:
+                draw_single_line(draw, line, lw_px, lh_px, lx + shadow_offset_x, ly + shadow_offset_y, shadow_color)
 
-    # ── Rotation ──
+        # ── Outline ──
+        if text_outline:
+            for dx in range(-outline_width, outline_width + 1):
+                for dy in range(-outline_width, outline_width + 1):
+                    if dx != 0 or dy != 0:
+                        draw_single_line(draw, line, lw_px, lh_px, lx + dx, ly + dy, outline_color)
+
+        # ── Main text + decorations ──
+        draw_single_line(draw, line, lw_px, lh_px, lx, ly, font_color)
+
+    # ── Rotation (rotates the whole canvas) ──
     if text_rotation != 0:
         canvas = canvas.rotate(-text_rotation, expand=False, fillcolor=(0, 0, 0, 0))
 
-    # Crop back
     result = canvas.crop((pad, pad, pad + img.width, pad + img.height))
     return result.convert('RGB')
 
@@ -322,6 +407,14 @@ async def preview_badge(
             text_strikethrough=cfg.get("text_strikethrough", False),
             text_rotation=cfg.get("text_rotation", 0),
             arabic_support=cfg.get("arabic_support", True),
+            text_transform=cfg.get("text_transform", "none"),
+            letter_spacing=int(cfg.get("letter_spacing", 0)),
+            text_bg=cfg.get("text_bg", False),
+            text_bg_color=cfg.get("text_bg_color", "#000000"),
+            text_bg_opacity=float(cfg.get("text_bg_opacity", 0.5)),
+            text_bg_padding=int(cfg.get("text_bg_padding", 8)),
+            text_wrap=cfg.get("text_wrap", False),
+            text_wrap_width=int(cfg.get("text_wrap_width", 0)),
         )
 
         buf = io.BytesIO()
@@ -351,15 +444,29 @@ async def generate_badges(
         names_bytes = await names_file.read()
         filename = names_file.filename.lower()
 
+        HEADER_KEYWORDS = {"name", "full_name", "fullname", "attendee", "participant",
+                           "nom", "nombre", "اسم", "prénom"}
+
+        def is_header(val: str) -> bool:
+            v = val.strip().lower()
+            return v in HEADER_KEYWORDS or any(k in v for k in HEADER_KEYWORDS)
+
+        def clean_names(raw_list):
+            cleaned = [str(n).strip() for n in raw_list if str(n).strip()]
+            if cleaned and is_header(cleaned[0]):
+                cleaned = cleaned[1:]
+            return cleaned
+
         if filename.endswith('.txt'):
-            names_raw = names_bytes.decode('utf-8', errors='ignore').splitlines()
+            # utf-8-sig strips BOM automatically
+            names_raw = names_bytes.decode('utf-8-sig', errors='ignore').splitlines()
             names = [n.strip() for n in names_raw if n.strip()]
         elif filename.endswith('.csv'):
-            df = pd.read_csv(io.BytesIO(names_bytes), encoding='utf-8', on_bad_lines='skip')
-            names = df.iloc[:, 0].dropna().astype(str).tolist()
+            df = pd.read_csv(io.BytesIO(names_bytes), encoding='utf-8-sig', on_bad_lines='skip', header=None)
+            names = clean_names(df.iloc[:, 0].dropna().tolist())
         elif filename.endswith(('.xlsx', '.xls')):
-            df = pd.read_excel(io.BytesIO(names_bytes))
-            names = df.iloc[:, 0].dropna().astype(str).tolist()
+            df = pd.read_excel(io.BytesIO(names_bytes), header=None)
+            names = clean_names(df.iloc[:, 0].dropna().tolist())
         else:
             raise HTTPException(status_code=400, detail="Unsupported names file format")
 
@@ -368,7 +475,8 @@ async def generate_badges(
 
         # Generate badges into ZIP
         zip_buffer = io.BytesIO()
-        event_name = cfg.get("event_name", "badges").strip().replace(" ", "_") or "badges"
+        raw_event = cfg.get("event_name", "").strip()
+        event_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in raw_event).strip("_") or "badges"
 
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
             for i, name in enumerate(names):
@@ -395,6 +503,14 @@ async def generate_badges(
                     text_strikethrough=cfg.get("text_strikethrough", False),
                     text_rotation=cfg.get("text_rotation", 0),
                     arabic_support=cfg.get("arabic_support", True),
+                    text_transform=cfg.get("text_transform", "none"),
+                    letter_spacing=int(cfg.get("letter_spacing", 0)),
+                    text_bg=cfg.get("text_bg", False),
+                    text_bg_color=cfg.get("text_bg_color", "#000000"),
+                    text_bg_opacity=float(cfg.get("text_bg_opacity", 0.5)),
+                    text_bg_padding=int(cfg.get("text_bg_padding", 8)),
+                    text_wrap=cfg.get("text_wrap", False),
+                    text_wrap_width=int(cfg.get("text_wrap_width", 0)),
                 )
 
                 # Safe filename
