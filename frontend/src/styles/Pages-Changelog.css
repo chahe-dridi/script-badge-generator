@@ -1,0 +1,194 @@
+/* Changelog / release-notes page */
+
+.pg-changelog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 60px 24px 100px;
+}
+
+.changelog-article {
+  width: 100%;
+  max-width: 720px;
+  animation: fadeUp 0.45s ease-out both;
+}
+
+.changelog-head {
+  margin-bottom: 40px;
+}
+
+.changelog-intro {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.changelog-current-badge {
+  font-family: var(--fmono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--a);
+  background: rgba(184, 255, 69, 0.08);
+  border: 1px solid rgba(184, 255, 69, 0.2);
+  border-radius: 20px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+/* ── Timeline ── */
+
+.changelog-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cl-entry {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 16px;
+  position: relative;
+}
+
+/* Vertical connector line running through the markers */
+.cl-marker {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.cl-marker::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: -8px;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--bdr2);
+}
+
+.cl-entry:last-child .cl-marker::before {
+  display: none;
+}
+
+.cl-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 2px solid var(--bdr2);
+  margin-top: 5px;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.cl-dot-latest {
+  background: var(--a);
+  border-color: var(--a);
+  box-shadow: 0 0 0 4px rgba(184, 255, 69, 0.12);
+}
+
+.cl-body {
+  padding-bottom: 32px;
+  min-width: 0;
+}
+
+.cl-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cl-version {
+  font-family: var(--fdisp);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -0.01em;
+}
+
+.cl-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: var(--fmono);
+  border-radius: 20px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+}
+
+.cl-tag-major {
+  color: var(--a3);
+  background: rgba(255, 69, 133, 0.1);
+  border-color: rgba(255, 69, 133, 0.25);
+}
+
+.cl-tag-minor {
+  color: var(--a2);
+  background: rgba(69, 232, 255, 0.1);
+  border-color: rgba(69, 232, 255, 0.25);
+}
+
+.cl-tag-patch,
+.cl-tag-initial {
+  color: var(--muted);
+  background: var(--bg3);
+  border-color: var(--bdr2);
+}
+
+.cl-tag-latest {
+  color: var(--a);
+  background: rgba(184, 255, 69, 0.1);
+  border-color: rgba(184, 255, 69, 0.25);
+}
+
+.cl-date {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--fmono);
+}
+
+.cl-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.cl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.cl-item-icon {
+  color: var(--a);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 600px) {
+  .pg-changelog {
+    padding: 40px 16px 80px;
+  }
+
+  .cl-date {
+    margin-left: 0;
+    width: 100%;
+  }
+}

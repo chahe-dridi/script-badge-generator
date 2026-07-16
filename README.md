@@ -1,36 +1,68 @@
 # Script Badge Generator
 
-This repository contains a full-suite solution for generating professional event badges. It evolved from simple Python Tkinter scripts into a full-stack web application with instant in-browser rendering.
+A full-suite solution for generating professional event badges at scale. It evolved from simple Python Tkinter scripts into a full-stack web application with instant, in-browser rendering.
 
-## Architecture
+## What's inside
 
-This project encompasses multiple approaches to generating badges:
+### Web app (full stack)
 
-1. **Web Version (Full Stack)**
-   The modern implementation is split into a robust web client and optional backend.
-   - **`frontend/`**: A highly interactive React 18 application that renders badges on the client side using HTML5 Canvas and JSZip. Includes custom text effects, alignment, and modern UI.
-   - **`backend/`**: A FastAPI Python service providing REST endpoints for expanded data processing.
+- **`frontend/`** — a React 18 SPA that renders badges **client-side** (HTML5 Canvas + JSZip). Works fully standalone.
+- **`backend/`** — a FastAPI service for server-side rendering **plus accounts, JWT auth, and plan tiers**.
 
-2. **Legacy Desktop Scripts**
-   The original desktop solutions remain available for purely local batch jobs:
-   - `badge_generator.py`: A user-friendly badge generator with essential features and a minimal UI.
-   - `professional_badge_generator.py`: An advanced generator adding shadows, outlines, and multi-threading.
+### Legacy desktop scripts
+Original local batch tools remain available:
+- `badge_generator.py` — essential generator with a minimal Tkinter UI.
+- `professional_badge_generator.py` — adds shadows, outlines, and multi-threading.
 
-## Quick Start (Web App)
+## Features
 
-### Frontend
-1. `cd frontend`
-2. `npm install`
-3. `npm start`
-The web GUI will open at `http://localhost:3001`.
+**Create badges**
+- Upload a template image + a names list (TXT / CSV / Excel) + an event name
+- Live canvas preview — no server round-trip
+- Font family / size / weight / style, color, X/Y position, alignment, rotation
+- Text shadow, outline, underline, strikethrough
+- Arabic / RTL auto-detection with Arabic-friendly fonts
 
-### Backend
-1. `cd backend`
-2. `pip install -r requirements.txt`
-3. `uvicorn main:app --reload`
-The API will be available at `http://localhost:8000`.
+**Batch & refine**
+- Generate all badges into a searchable gallery
+- Per-badge overrides (size / position / color) with reset
+- Rename, regenerate one / all, remove
+- Preview against real uploaded names (🎲 shuffle)
 
-Check the nested `README.md` files in `frontend` and `backend` respectively for deeper development instructions.
+**Save & export**
+- Design presets saved in the browser, with **JSON export / import** (backup & share)
+- Client-side ZIP export (with server fallback for large batches)
+- Per-badge PNG download
+
+**Accounts & plans** (backend)
+- Register / login / refresh (JWT), current-user endpoint
+- **Free / Pro / Team** tiers with server-side quota enforcement (e.g. project limits)
+- User-owned projects (CRUD). *Payments are not wired yet — tiers are modeled and gated.*
+
+## Quick start (web app)
+
+Run the two servers in separate terminals:
+
+```bash
+# Frontend (http://localhost:3000)
+cd frontend && npm install && npm start
+
+# Backend (http://localhost:8000, Swagger at /docs)
+cd backend && pip install -r requirements.txt && uvicorn main:app --reload
+```
+
+The client works on its own; the backend adds the server ZIP fallback and accounts/plans.
+
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [`frontend/RUNNING.md`](frontend/RUNNING.md) | Run & configure the web client |
+| [`backend/RUNNING.md`](backend/RUNNING.md) | Run & configure the API (env, endpoints, tests) |
+| [`audit/DESIGN-AUDIT.md`](audit/DESIGN-AUDIT.md) | UX / accessibility / CSS audit + fixes |
+| [`audit/FEATURE-AUDIT.md`](audit/FEATURE-AUDIT.md) | Feature inventory & roadmap |
+| [`audit/BACKEND-PLAN.md`](audit/BACKEND-PLAN.md) | Auth / users / plans architecture |
+| [`DEPLOY.md`](DEPLOY.md) | Deployment notes |
 
 ---
 

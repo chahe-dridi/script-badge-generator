@@ -23,6 +23,17 @@ const INIT_CFG = {
   text_strikethrough: false,
   text_rotation: 0,
   arabic_support: true,
+  // v2.2 — text styling
+  text_transform: "none",    // none | uppercase | lowercase | titlecase
+  letter_spacing: 0,         // px between characters
+  // v2.2 — text background box
+  text_bg: false,
+  text_bg_color: "#000000",
+  text_bg_opacity: 0.5,
+  text_bg_padding: 8,
+  // v2.2 — text wrap
+  text_wrap: false,
+  text_wrap_width: 0,        // 0 = use template width
 };
 
 const BadgeContext = createContext();
@@ -73,7 +84,7 @@ export function BadgeProvider({ children }) {
   }, []);
 
   const loadDesign = useCallback((design) => {
-    setCfg(design);
+    setCfg({ ...INIT_CFG, ...design });
     notify("Design loaded!", "success");
   }, [notify]);
 
@@ -86,6 +97,54 @@ export function BadgeProvider({ children }) {
   const removeDesign = useCallback((id) => {
     setSavedDesigns(prev => prev.filter(d => d.id !== id));
     notify("Design removed", "info");
+  }, [notify]);
+
+  // F1 — export all saved designs to a portable JSON file (backup / share)
+  const exportDesigns = useCallback(() => {
+    if (savedDesigns.length === 0) return notify("No saved designs to export", "error");
+    const payload = {
+      type: "badgegen-designs",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      designs: savedDesigns,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `badgegen-designs-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const n = savedDesigns.length;
+    notify(`Exported ${n} design${n > 1 ? "s" : ""}`, "success");
+  }, [savedDesigns, notify]);
+
+  // F1 — import designs from a JSON file (accepts our export shape or a bare array)
+  const importDesigns = useCallback(async (file) => {
+    try {
+      const data = JSON.parse(await file.text());
+      const incoming = Array.isArray(data) ? data : data.designs;
+      if (!Array.isArray(incoming)) throw new Error("unrecognized file format");
+      // Only keep objects that actually look like a badge design
+      const valid = incoming.filter((d) => d && typeof d === "object" && "font_size" in d);
+      if (valid.length === 0) throw new Error("no valid designs found");
+      setSavedDesigns((prev) => {
+        const ids = new Set(prev.map((d) => d.id));
+        const merged = [...prev];
+        for (const d of valid) {
+          let id = d.id;
+          if (id === undefined || ids.has(id)) id = Date.now() + Math.floor(Math.random() * 1e5);
+          ids.add(id);
+          merged.push({ ...d, id, designName: d.designName || "Imported design" });
+        }
+        return merged;
+      });
+      notify(`Imported ${valid.length} design${valid.length > 1 ? "s" : ""}`, "success");
+    } catch (e) {
+      notify("Import failed: " + e.message, "error");
+    }
   }, [notify]);
 
   // Gallery actions
@@ -301,7 +360,7 @@ export function BadgeProvider({ children }) {
     galProgress, setGP,
     zipLoading, zipProgress, zipDone,
     toast, notify,
-    savedDesigns, loadDesign, saveDesign, removeDesign,
+    savedDesigns, loadDesign, saveDesign, removeDesign, exportDesigns, importDesigns,
     buildGallery, regenOne, removeBadge, removeGalleryItem: removeBadge, regenAll, downloadZip, resetAll, INIT_CFG
   };
 

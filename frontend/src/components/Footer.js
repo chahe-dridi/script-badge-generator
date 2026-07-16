@@ -11,8 +11,9 @@ const PRODUCT_LINKS = [
 ];
 
 const COMPANY_LINKS = [
-  { label: "About Us", to: "/about",   external: false },
-  { label: "Contact",  to: "https://github.com/chahe-dridi/script-badge-generator/issues", external: true },
+  { label: "About Us",  to: "/about",     external: false },
+  { label: "Changelog", to: "/changelog", external: false },
+  { label: "Contact",   to: "https://github.com/chahe-dridi/script-badge-generator/issues", external: true },
 ];
 
 const LEGAL_LINKS = [
@@ -114,7 +115,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom-right">
-          <span className="footer-version">v{VERSION}</span>
+          <Link to="/changelog" className="footer-version" title="View release notes">v{VERSION}</Link>
         </div>
       </div>
     </footer>

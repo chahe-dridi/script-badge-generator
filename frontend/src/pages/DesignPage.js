@@ -51,15 +51,21 @@ export default function DesignPage() {
     templateImg, templateFile,
     names, namesFile,
     gallery, buildGallery, downloadZip,
-    savedDesigns, loadDesign, saveDesign, removeDesign
+    savedDesigns, loadDesign, saveDesign, removeDesign, exportDesigns, importDesigns
   } = useBadgeContext();
 
   const [designTab, setDT] = React.useState('text');
   const [newDesignName, setNDN] = React.useState('');
-  
-  const previewCanvasRef = useRef();
 
-  // Instant preview
+  const previewCanvasRef = useRef();
+  const importInputRef = useRef();
+
+  const shufflePreviewName = () => {
+    if (names.length === 0) return;
+    const pick = names[Math.floor(Math.random() * names.length)];
+    setPN(pick);
+  };
+
   useEffect(() => {
     if (!previewCanvasRef.current || !templateImg) return;
     renderBadgeToCanvas(previewCanvasRef.current, templateImg, previewName, cfg);
@@ -69,6 +75,9 @@ export default function DesignPage() {
 
   const canGallery = !!templateImg && names.length > 0;
   const canExport = gallery.length > 0 || (!!templateFile && !!(namesFile || names.length > 0));
+
+  const tW = templateImg?.naturalWidth || 3000;
+  const tH = templateImg?.naturalHeight || 3000;
 
   return (
     <div className='pg pg-design'>
@@ -83,6 +92,7 @@ export default function DesignPage() {
         </div>
 
         <div className='dscroll'>
+          {/* ── TEXT TAB ── */}
           {designTab === 'text' && (
             <div className='dgroup'>
               <div className='dfield'>
@@ -91,7 +101,9 @@ export default function DesignPage() {
                   {FONTS.map((f) => <option key={f}>{f}</option>)}
                 </select>
               </div>
+
               <Knob label='FONT SIZE' value={cfg.font_size} min={8} max={300} unit='px' onChange={(v) => s('font_size', v)} />
+
               <div className='dfield'>
                 <label className='dlbl'>STYLE</label>
                 <div className='dpills'>
@@ -103,6 +115,27 @@ export default function DesignPage() {
                   ))}
                 </div>
               </div>
+
+              <div className='dfield'>
+                <label className='dlbl'>TEXT TRANSFORM</label>
+                <div className='dpills'>
+                  {[
+                    ['none', 'none'],
+                    ['uppercase', 'UPPER'],
+                    ['lowercase', 'lower'],
+                    ['titlecase', 'Title'],
+                  ].map(([v, label]) => (
+                    <button
+                      key={v}
+                      className={cls('dpill', cfg.text_transform === v && 'dpill-on')}
+                      onClick={() => s('text_transform', v)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className='dfield'>
                 <label className='dlbl'>COLOR</label>
                 <div className='color-row'>
@@ -110,6 +143,7 @@ export default function DesignPage() {
                   <span className='chex'>{cfg.font_color}</span>
                 </div>
               </div>
+
               <div className='dfield'>
                 <label className='dlbl'>ALIGNMENT</label>
                 <div className='dpills'>
@@ -118,15 +152,41 @@ export default function DesignPage() {
                   ))}
                 </div>
               </div>
+
+              <Knob label='LETTER SPACING' value={cfg.letter_spacing} min={0} max={20} step={0.5} unit='px' onChange={(v) => s('letter_spacing', v)} />
+
               <Sw label='Underline' on={cfg.text_underline} onChange={(v) => s('text_underline', v)} />
               <Sw label='Strikethrough' on={cfg.text_strikethrough} onChange={(v) => s('text_strikethrough', v)} />
               <Knob label='ROTATION' value={cfg.text_rotation} min={-180} max={180} unit='°' onChange={(v) => s('text_rotation', v)} />
+
+              <div className='fx-div' />
+              <Sw
+                label='Text Wrap'
+                sub='Break long names across lines'
+                on={cfg.text_wrap}
+                onChange={(v) => s('text_wrap', v)}
+              />
+              {cfg.text_wrap && (
+                <div className='effect-sub'>
+                  <Knob
+                    label='MAX WIDTH'
+                    value={cfg.text_wrap_width}
+                    min={0}
+                    max={tW}
+                    unit='px'
+                    onChange={(v) => s('text_wrap_width', v)}
+                  />
+                  <div className='dinfo'>0 = use template width automatically</div>
+                </div>
+              )}
             </div>
           )}
+
+          {/* ── POSITION TAB ── */}
           {designTab === 'position' && (
             <div className='dgroup'>
-              <Knob label='X POSITION' value={cfg.text_x} min={0} max={3000} unit='px' onChange={(v) => s('text_x', v)} />
-              <Knob label='Y POSITION' value={cfg.text_y} min={0} max={3000} unit='px' onChange={(v) => s('text_y', v)} />
+              <Knob label='X POSITION' value={cfg.text_x} min={0} max={tW} unit='px' onChange={(v) => s('text_x', v)} />
+              <Knob label='Y POSITION' value={cfg.text_y} min={0} max={tH} unit='px' onChange={(v) => s('text_y', v)} />
               <div className='dfield'>
                 <label className='dlbl'>SNAP TO POSITION</label>
                 <div className='snap9'>
@@ -148,6 +208,8 @@ export default function DesignPage() {
               <div className='dinfo'>Coordinates snap to actual template dimensions</div>
             </div>
           )}
+
+          {/* ── EFFECTS TAB ── */}
           {designTab === 'effects' && (
             <div className='dgroup'>
               <Sw label='Drop Shadow' sub='Depth behind text' on={cfg.text_shadow} onChange={(v) => s('text_shadow', v)} />
@@ -165,7 +227,9 @@ export default function DesignPage() {
                   <Knob label='BLUR' value={cfg.shadow_blur} min={0} max={15} onChange={(v) => s('shadow_blur', v)} />
                 </div>
               )}
+
               <div className='fx-div' />
+
               <Sw label='Text Outline' sub='Border around letters' on={cfg.text_outline} onChange={(v) => s('text_outline', v)} />
               {cfg.text_outline && (
                 <div className='effect-sub'>
@@ -179,8 +243,27 @@ export default function DesignPage() {
                   <Knob label='WIDTH' value={cfg.outline_width} min={1} max={12} onChange={(v) => s('outline_width', v)} />
                 </div>
               )}
+
+              <div className='fx-div' />
+
+              <Sw label='Text Background' sub='Filled box behind the text' on={cfg.text_bg} onChange={(v) => s('text_bg', v)} />
+              {cfg.text_bg && (
+                <div className='effect-sub'>
+                  <div className='dfield'>
+                    <label className='dlbl'>BACKGROUND COLOR</label>
+                    <div className='color-row'>
+                      <input type='color' className='cpick' value={cfg.text_bg_color} onChange={(e) => s('text_bg_color', e.target.value)} />
+                      <span className='chex'>{cfg.text_bg_color}</span>
+                    </div>
+                  </div>
+                  <Knob label='OPACITY' value={cfg.text_bg_opacity} min={0} max={1} step={0.05} onChange={(v) => s('text_bg_opacity', v)} />
+                  <Knob label='PADDING' value={cfg.text_bg_padding} min={0} max={48} unit='px' onChange={(v) => s('text_bg_padding', v)} />
+                </div>
+              )}
             </div>
           )}
+
+          {/* ── LANGUAGE TAB ── */}
           {designTab === 'language' && (
             <div className='dgroup'>
               <Sw label='Arabic / RTL Support' sub='Auto-detects per name' on={cfg.arabic_support} onChange={(v) => s('arabic_support', v)} />
@@ -193,17 +276,52 @@ export default function DesignPage() {
               </div>
             </div>
           )}
+
+          {/* ── PRESETS TAB ── */}
           {designTab === 'presets' && (
             <div className='dgroup presets-tab'>
               <div className='dfield'>
                 <label className='dlbl'>SAVE CURRENT DESIGN</label>
                 <div className='flex-row-gap' style={{display:'flex', gap: '8px'}}>
-                  <input className='pname-inp' style={{flex: 1}} value={newDesignName} onChange={e => setNDN(e.target.value)} placeholder='e.g. Dark Theme...' />
+                  <input className='pname-inp' style={{flex: 1}} aria-label='New design name' value={newDesignName} onChange={e => setNDN(e.target.value)} placeholder='e.g. Dark Theme...' />
                   <button className='cta cta-ghost cta-sm' disabled={!newDesignName.trim()} onClick={() => { saveDesign(newDesignName); setNDN(''); }}>Save</button>
                 </div>
               </div>
               <div className='fx-div' />
-              <label className='dlbl'>SAVED DESIGNS</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className='dlbl' style={{ margin: 0 }}>SAVED DESIGNS</label>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    className='ghost'
+                    style={{ padding: '4px 8px', fontSize: '11px' }}
+                    onClick={exportDesigns}
+                    disabled={savedDesigns.length === 0}
+                    title='Export all saved designs to a JSON file'
+                  >
+                    ⬆ Export
+                  </button>
+                  <button
+                    className='ghost'
+                    style={{ padding: '4px 8px', fontSize: '11px' }}
+                    onClick={() => importInputRef.current?.click()}
+                    title='Import designs from a JSON file'
+                  >
+                    ⬇ Import
+                  </button>
+                  <input
+                    ref={importInputRef}
+                    type='file'
+                    accept='application/json,.json'
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) importDesigns(f);
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+              </div>
+              <div style={{ height: '8px' }} />
               {savedDesigns.length === 0 ? (
                 <div className='dinfo'>No saved designs yet.</div>
               ) : (
@@ -226,7 +344,19 @@ export default function DesignPage() {
         <div className='design-footer'>
           <div className='pname-box'>
             <label className='dlbl'>PREVIEW NAME</label>
-            <input className='pname-inp' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input className='pname-inp' style={{ flex: 1 }} aria-label='Preview name' value={previewName} onChange={(e) => setPN(e.target.value)} placeholder='Type any name…' />
+              {names.length > 0 && (
+                <button
+                  className='ghost'
+                  style={{ flexShrink: 0, padding: '0 12px' }}
+                  onClick={shufflePreviewName}
+                  title='Preview a real name from your uploaded list'
+                >
+                  🎲
+                </button>
+              )}
+            </div>
           </div>
           <div className='design-ctas'>
             {gallery.length > 0 && (

@@ -1,7 +1,6 @@
 /* App.css - Main entry point for styles */
 /* All component-specific styles are in the /styles directory */
-
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+/* Fonts load via <link> in public/index.html (A12) — no render-blocking @import here. */
 
 * {
   box-sizing: border-box;

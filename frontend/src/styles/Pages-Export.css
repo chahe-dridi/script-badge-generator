@@ -39,8 +39,9 @@
 }
 
 .exp-h2 {
+  font-family: var(--fdisp);
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.5px;
   margin: 0;
 }
