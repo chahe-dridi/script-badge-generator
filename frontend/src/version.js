@@ -9,9 +9,14 @@
  * Update VERSION and add an entry to CHANGELOG on every meaningful release.
  */
 
-export const VERSION = "2.1.0";
+export const VERSION = "2.2.0";
 
 export const CHANGELOG = [
+  {
+    version: "2.2.0",
+    date: "2026-07-16",
+    note: "Richer text design — text transform (UPPER/lower/Title), letter spacing, text background box, and automatic line-wrap with configurable max width. Improved CSV parsing (quoted fields, BOM stripping, smarter header detection). Gallery overrides now cover font family, alignment, and letter spacing; position sliders scale to template dimensions. Full codebase audit added (AUDIT.md).",
+  },
   {
     version: "2.1.0",
     date: "2026-07-04",
