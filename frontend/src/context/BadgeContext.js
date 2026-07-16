@@ -23,6 +23,17 @@ const INIT_CFG = {
   text_strikethrough: false,
   text_rotation: 0,
   arabic_support: true,
+  // v2.2 — text styling
+  text_transform: "none",    // none | uppercase | lowercase | titlecase
+  letter_spacing: 0,         // px between characters
+  // v2.2 — text background box
+  text_bg: false,
+  text_bg_color: "#000000",
+  text_bg_opacity: 0.5,
+  text_bg_padding: 8,
+  // v2.2 — text wrap
+  text_wrap: false,
+  text_wrap_width: 0,        // 0 = use template width
 };
 
 const BadgeContext = createContext();
@@ -73,7 +84,7 @@ export function BadgeProvider({ children }) {
   }, []);
 
   const loadDesign = useCallback((design) => {
-    setCfg(design);
+    setCfg({ ...INIT_CFG, ...design });
     notify("Design loaded!", "success");
   }, [notify]);
 
